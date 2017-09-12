@@ -80,7 +80,7 @@ def train_and_get_result(x1, x2, lr, batch_size):
     validation_set_index_step = size / 4
     pre_validation_error = sys.maxint
     curr_validation_error = sys.maxint - 1
-    while curr_validation_error >= 1 and (pre_validation_error >= curr_validation_error or curr_validation_error <= 0): # early stopping when the validation error is greater than its previous one
+    while epoch <= 25000 and curr_validation_error >= 1 and (pre_validation_error >= curr_validation_error or curr_validation_error <= 0): # early stopping when the validation error is greater than its previous one
     #while True:
 
         validation_set_index += validation_set_index_step
@@ -134,7 +134,7 @@ def train_and_get_result(x1, x2, lr, batch_size):
     plot_error_epoch(errors, lr, batch_size)
     plot_distances_to_correct_solution(distances_to_correct_w, lr, batch_size)
     print "Result: pre_validation_error:\t", pre_validation_error, "curr_validation_error:\t", curr_validation_error
-    print "Result: w1:\t", w1, "\tw2:\t", w2, "\tb:\t", b, "\tnum of epoch:\t", epoch
+    print "Result: w1:\t", w1, "\tw2:\t", w2, "\tb:\t", b, "\tnum of epoch:\t", epoch, "\tlr:\t", lr, "\tbatch_size:\t", batch_size
 
 # online
 # learning rate lr = 0.0001
@@ -147,7 +147,6 @@ train_and_get_result(x1, x2, lr = 0.0005, batch_size = 1)
 # online
 # learning rate lr = 0.001
 train_and_get_result(x1, x2, lr = 0.001, batch_size = 1)
-
 
 # online
 # learning rate lr = 0.005
