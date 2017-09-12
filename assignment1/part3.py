@@ -90,11 +90,11 @@ def train_and_get_result(x1, x2, lr, batch_size):
     size = len(x1)
     validation_set_index = 0
     validation_set_index_step = size / 4
-    pre_validation_error = sys.maxint
-    curr_validation_error = sys.maxint - 1
-    #while curr_validation_error >= 1 and (pre_validation_error >= curr_validation_error or curr_validation_error <= 0): # early stopping when the validation error is greater than its previous one
+    pre_validation_acc = -1.0
+    curr_validation_acc = 0.0
+    #while pre_validation_acc <= curr_validation_acc: # early stopping when the validation accuracy is smaller than its previous one
     #while True:
-    while epoch <= 10000:
+    while epoch <= 2000:
         validation_set_index += validation_set_index_step
         validation_set_index %= size
 
@@ -110,6 +110,7 @@ def train_and_get_result(x1, x2, lr, batch_size):
             sum_error_b = 0
             if x1i not in zip(x1_validation) and x2i not in zip(x2_validation):
                 error = zi - activation(x1i * w1 + x2i * w2 + b)
+                #error = zi - x1i * w1 + x2i * w2 + b
                 sum_error_w1 += error * x1i
                 sum_error_w2 += error * x2i
                 sum_error_b += error
@@ -125,27 +126,33 @@ def train_and_get_result(x1, x2, lr, batch_size):
                 i += 1
 
         if epoch >= 4 and epoch % 4 == 0:
-            pre_validation_error = curr_validation_error
+            pre_validation_acc = curr_validation_acc
             if epoch % 100 == 0: # print only every 100 epochs
-                print "epoch:\t", epoch, "\t curr_validation_error:\t", curr_validation_error, "\tacc:\t", accuracy 
-            curr_validation_error = 0
+
+                print "epoch:\t", epoch, "\t acc entire set:\t", accuracy
+                #print "epoch:\t", epoch, "\t curr_validation_acc:\t", curr_validation_acc, "\tacc entire set:\t", accuracy
+            curr_validation_acc = 0
 
         # validation
+        '''
+        curr_validation_acc = 0.0
         for x1i, x2i, zi in zip(x1_validation, x2_validation, z_validation):
-            curr_validation_error += abs(zi - (x1i * w1 + x2i * w2 + b))
+            if zi == activation(x1i * w1 + x2i * w2 + b):
+                curr_validation_acc += 1
+        curr_validation_acc /= len(x1)
+        '''
 
         # get accuracy from the entire set for later plotting
         accuracy = 0.0
         for x1i, x2i, zi in zip(x1, x2, z):
             if zi == activation(x1i * w1 + x2i * w2 + b):
-                accuracy += 1
+                accuracy += 1.0
         accuracy /= len(x1)
 
         accuracy_arr.append(accuracy)
         epoch += 1
 
     plot_error_epoch(accuracy_arr, lr, batch_size)
-    print "Result: pre_validation_error:\t", pre_validation_error, "curr_validation_error:\t", curr_validation_error
     print "Result: w1:\t", w1, "\tw2:\t", w2, "\tb:\t", b, "\tnum of epoch:\t", epoch
 
 
