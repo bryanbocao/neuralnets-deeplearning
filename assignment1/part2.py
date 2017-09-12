@@ -142,15 +142,15 @@ def train_and_get_result(x1, x2, lr, batch_size):
 
 # online
 # learning rate lr = 0.0005
-train_and_get_result(x1, x2, lr = 0.0005, batch_size = 1)
+##train_and_get_result(x1, x2, lr = 0.0005, batch_size = 1)
 
 # online
 # learning rate lr = 0.001
-train_and_get_result(x1, x2, lr = 0.001, batch_size = 1)
+#train_and_get_result(x1, x2, lr = 0.001, batch_size = 1)
 
 # online
 # learning rate lr = 0.005
-train_and_get_result(x1, x2, lr = 0.005, batch_size = 1)
+#train_and_get_result(x1, x2, lr = 0.005, batch_size = 1)
 
 # online
 # learning rate lr = 0.01
@@ -171,7 +171,7 @@ train_and_get_result(x1, x2, lr = 0.01, batch_size = 1)
 
 # minibatch batch_size = 5
 # learning rate lr = 0.0005
-train_and_get_result(x1, x2, lr = 0.0005, batch_size = 5)
+#train_and_get_result(x1, x2, lr = 0.0005, batch_size = 5)
 
 # minibatch batch_size = 25
 # learning rate lr = 0.0005

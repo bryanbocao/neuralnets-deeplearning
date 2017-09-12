@@ -39,6 +39,16 @@ def plot_error_epoch(accuracy_arr, lr, batch_size, first_n):
     plt.ylabel('accurary')
     plt.show()
 
+def plot_epochs_bar(epochs_bar):
+    y_axis = epochs_bar
+    x_axis = [5, 10, 25, 50, 75]
+    ind = np.arange(len(x_axis))
+    plt.bar(ind, y_axis)
+    plt.xticks(ind, x_axis)
+    plt.xlabel('epoch num when converge')
+    plt.ylabel('training set size')
+    plt.show()
+
 def sigmoid(x):
     return 1 / (1 + np.exp(-x))
 
@@ -50,6 +60,8 @@ def activation(x): # use sigmoid as activation function
         return 0
 
 # create method to train and get result with different settings like online, minibatch, batch and learning rate
+epochs_bar = []
+
 def train_and_get_result(x1, x2, first_n, lr, batch_size):
 
     x1_first_n = x1[:first_n]
@@ -69,7 +81,7 @@ def train_and_get_result(x1, x2, first_n, lr, batch_size):
     print "random initial b:\t", b
 
     epoch = 0
-    while epoch <= 6000:
+    while epoch <= 5000:
 
         # training
         i = 1
@@ -105,17 +117,35 @@ def train_and_get_result(x1, x2, first_n, lr, batch_size):
                 print "epoch:\t", epoch, "\tfirst:\t", first_n, "\t acc last 25:\t", accuracy
 
         accuracy_arr.append(accuracy)
+        if accuracy >= 0.96:
+            if first_n == 5:
+                if len(epochs_bar) < 1:
+                    epochs_bar.append(epoch)
+            elif first_n == 10:
+                if len(epochs_bar) < 2:
+                    epochs_bar.append(epoch)
+            elif first_n == 25:
+                if len(epochs_bar) < 3:
+                    epochs_bar.append(epoch)
+            elif first_n == 50:
+                if len(epochs_bar) < 4:
+                    epochs_bar.append(epoch)
+            elif first_n == 75:
+                if len(epochs_bar) < 5:
+                    epochs_bar.append(epoch)
         epoch += 1
 
     plot_error_epoch(accuracy_arr, lr, batch_size, first_n)
     print "Result: w1:\t", w1, "\tw2:\t", w2, "\tb:\t", b, "\tnum of epoch:\t", epoch
 
 # online
-# learning rate lr = 0.00003
-train_and_get_result(x1, x2, first_n = 5, lr = 0.00003, batch_size = 1)
-train_and_get_result(x1, x2, first_n = 10, lr = 0.00003, batch_size = 1)
-train_and_get_result(x1, x2, first_n = 25, lr = 0.00003, batch_size = 1)
-train_and_get_result(x1, x2, first_n = 50, lr = 0.00003, batch_size = 1)
-train_and_get_result(x1, x2, first_n = 75, lr = 0.00003, batch_size = 1)
+# learning rate lr = 0.0001
+train_and_get_result(x1, x2, first_n = 5, lr = 0.0001, batch_size = 1)
+train_and_get_result(x1, x2, first_n = 10, lr = 0.0001, batch_size = 1)
+train_and_get_result(x1, x2, first_n = 25, lr = 0.0001, batch_size = 1)
+train_and_get_result(x1, x2, first_n = 50, lr = 0.0001, batch_size = 1)
+train_and_get_result(x1, x2, first_n = 75, lr = 0.0001, batch_size = 1)
+
+plot_epochs_bar(epochs_bar)
 
 # reference: http://cs229.stanford.edu/notes/cs229-notes1.pdf
