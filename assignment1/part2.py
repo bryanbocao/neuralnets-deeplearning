@@ -15,17 +15,13 @@ data = np.loadtxt('assign1_data.txt')
 #print data
 
 x1 = data[:, 0]
-print "x1:", x1
+print ("x1:", x1)
 
 x2 = data[:, 1]
-print "x2:", x2
+print ("x2:", x2)
 
 y = data[:, 2]
-#print "y:", y
-
-z = data[:, 3]
-#print "z:", z
-
+#print ("y:", y)
 '''
 solution from part1 is:
 w1:	-2.04424259514
@@ -34,7 +30,28 @@ b:	-0.924290811868
 '''
 
 
-# In[2]:
+# In[18]:
+
+
+def plot_error_epoch(errors, lr, batch_size):
+    errors_y = np.array(errors)
+    epochs = []
+    for i in range(len(errors)):
+        epochs.append(i)
+    epochs_x = np.array(epochs)
+    plt.plot(epochs_x, errors_y)
+    title = ''
+    title += 'lr:'
+    title += str(lr)
+    title += ' batch_size:'
+    title += str(batch_size)
+    plt.title(title)
+    plt.xlabel('epoch')
+    plt.ylabel('error')
+    plt.show()
+
+
+# In[16]:
 
 
 # create method to train and get result with different settings like online, minibatch, batch and learning rate
@@ -42,6 +59,8 @@ def train_and_get_result(x1, x2, lr, batch_size):
     
     if batch_size > 75:
         batch_size = 75
+        
+    errors = []
     
     w1 = random.random() * 3
     w2 = random.random() * 3
@@ -58,8 +77,8 @@ def train_and_get_result(x1, x2, lr, batch_size):
     validation_set_index = 0
     validation_set_index_step = size / 4
     pre_validation_error = sys.maxint
-    curr_validation_error = 0
-    while pre_validation_error >= curr_validation_error or curr_validation_error <= 0: # early stopping when the validation error is greater than its previous one
+    curr_validation_error = sys.maxint - 1
+    while curr_validation_error >= 1 and (pre_validation_error >= curr_validation_error or curr_validation_error <= 0): # early stopping when the validation error is greater than its previous one
     #while True:
 
         validation_set_index += validation_set_index_step
@@ -100,22 +119,28 @@ def train_and_get_result(x1, x2, lr, batch_size):
         # validation
         for x1i, x2i, yi in zip(x1_validation, x2_validation, y_validation):
             curr_validation_error += abs(yi - (x1i * w1 + x2i * w2 + b))
-
+            
+        # get error from the entire set for later plotting
+        error = 0
+        for x1i, x2i, yi in zip(x1, x2, y):
+            error += yi - (x1i * w1 + x2i * w2 + b)
+        errors.append(abs(error))
         epoch += 1
 
+    plot_error_epoch(errors, lr, batch_size)
     print "Result: pre_validation_error:\t", pre_validation_error, "curr_validation_error:\t", curr_validation_error
-    print "Result: w1:\t", w1, "\tw2:\t", w2, "\tb:\t", b, "\tepoch:\t", epoch
+    print "Result: w1:\t", w1, "\tw2:\t", w2, "\tb:\t", b, "\tnum of epoch:\t", epoch
 
 
-# In[3]:
+# In[17]:
 
 
 # online
 # learning rate lr = 0.0001
-train_and_get_result(x1, x2, lr = 0.0001, batch_size = 1)
+train_and_get_result(x1, x2, lr = 0.001, batch_size = 1)
 
 
-# In[4]:
+# In[ ]:
 
 
 # online
@@ -123,12 +148,20 @@ train_and_get_result(x1, x2, lr = 0.0001, batch_size = 1)
 train_and_get_result(x1, x2, lr = 0.0005, batch_size = 1)
 
 
-# In[5]:
+# In[11]:
 
 
 # online
 # learning rate lr = 0.001
 train_and_get_result(x1, x2, lr = 0.001, batch_size = 1)
+
+
+# In[16]:
+
+
+# minibatch batch_size = 50
+# learning rate lr = 0.0001
+train_and_get_result(x1, x2, lr = 1, batch_size = 1)
 
 
 # In[6]:
@@ -139,12 +172,12 @@ train_and_get_result(x1, x2, lr = 0.001, batch_size = 1)
 train_and_get_result(x1, x2, lr = 0.005, batch_size = 1)
 
 
-# In[7]:
+# In[ ]:
 
 
 # online
 # learning rate lr = 0.01
-train_and_get_result(x1, x2, lr = 0.01, batch_size = 1)
+train_and_get_result(x1, x2, lr = 1, batch_size = 1)
 
 
 # In[8]:
@@ -169,6 +202,12 @@ train_and_get_result(x1, x2, lr = 0.0001, batch_size = 25)
 # minibatch batch_size = 50
 # learning rate lr = 0.0001
 train_and_get_result(x1, x2, lr = 0.0001, batch_size = 50)
+
+
+# In[ ]:
+
+
+
 
 
 # In[ ]:
