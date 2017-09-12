@@ -85,22 +85,7 @@ def train_and_get_result(x1, x2, lr, batch_size):
     print "random initial b:\t", b
 
     epoch = 0
-    # training set size : validation set size = 3 : 1
-    training_set_index = 0
-    size = len(x1)
-    validation_set_index = 0
-    validation_set_index_step = size / 4
-    pre_validation_acc = -1.0
-    curr_validation_acc = 0.0
-    #while pre_validation_acc <= curr_validation_acc: # early stopping when the validation accuracy is smaller than its previous one
-    #while True:
-    while epoch <= 2000:
-        validation_set_index += validation_set_index_step
-        validation_set_index %= size
-
-        x1_validation = x1[validation_set_index : validation_set_index + validation_set_index_step]
-        x2_validation = x2[validation_set_index : validation_set_index + validation_set_index_step]
-        z_validation = z[validation_set_index : validation_set_index + validation_set_index_step]
+    while epoch <= 3000:
 
         # training
         i = 1
@@ -108,39 +93,26 @@ def train_and_get_result(x1, x2, lr, batch_size):
             sum_error_w1 = 0
             sum_error_w2 = 0
             sum_error_b = 0
-            if x1i not in zip(x1_validation) and x2i not in zip(x2_validation):
-                error = zi - activation(x1i * w1 + x2i * w2 + b)
-                #error = zi - x1i * w1 + x2i * w2 + b
-                sum_error_w1 += error * x1i
-                sum_error_w2 += error * x2i
-                sum_error_b += error
-                if i >= batch_size: # only update weights after one batch
-                    w1 = w1 + lr * sum_error_w1
-                    w2 = w2 + lr * sum_error_w2
-                    b = b + lr * sum_error_b
-                    sum_error_w1 = 0
-                    sum_error_w2 = 0
-                    sum_error_b = 0
-                    i = 1
-                    continue
-                i += 1
+            error = zi - activation(x1i * w1 + x2i * w2 + b)
+            #error = zi - x1i * w1 + x2i * w2 + b
+            sum_error_w1 += error * x1i
+            sum_error_w2 += error * x2i
+            sum_error_b += error
+            if i >= batch_size: # only update weights after one batch
+                w1 = w1 + lr * sum_error_w1
+                w2 = w2 + lr * sum_error_w2
+                b = b + lr * sum_error_b
+                sum_error_w1 = 0
+                sum_error_w2 = 0
+                sum_error_b = 0
+                i = 1
+                continue
+            i += 1
 
         if epoch >= 4 and epoch % 4 == 0:
-            pre_validation_acc = curr_validation_acc
             if epoch % 100 == 0: # print only every 100 epochs
-
                 print "epoch:\t", epoch, "\t acc entire set:\t", accuracy
                 #print "epoch:\t", epoch, "\t curr_validation_acc:\t", curr_validation_acc, "\tacc entire set:\t", accuracy
-            curr_validation_acc = 0
-
-        # validation
-        '''
-        curr_validation_acc = 0.0
-        for x1i, x2i, zi in zip(x1_validation, x2_validation, z_validation):
-            if zi == activation(x1i * w1 + x2i * w2 + b):
-                curr_validation_acc += 1
-        curr_validation_acc /= len(x1)
-        '''
 
         # get accuracy from the entire set for later plotting
         accuracy = 0.0
