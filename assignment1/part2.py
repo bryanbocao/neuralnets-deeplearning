@@ -1,10 +1,4 @@
 
-# coding: utf-8
-
-# In[1]:
-
-
-# reference: http://cs229.stanford.edu/notes/cs229-notes1.pdf
 import numpy as np
 import matplotlib as ml
 import matplotlib.pyplot as plt
@@ -314,4 +308,4 @@ train_and_get_result(x1, x2, lr = 0.001, batch_size = 100)
 train_and_get_result(x1, x2, lr = 0.005, batch_size = 100)
 
 
-# In[ ]:
+# reference: http://cs229.stanford.edu/notes/cs229-notes1.pdf
