@@ -56,20 +56,20 @@ def plot_error_epoch(errors, lr, batch_size):
 
 # create method to train and get result with different settings like online, minibatch, batch and learning rate
 def train_and_get_result(x1, x2, lr, batch_size):
-    
+
     if batch_size > 75:
         batch_size = 75
-        
+
     errors = []
-    
+
     w1 = random.random() * 3
     w2 = random.random() * 3
     b = random.random() * 3
-    
+
     print "random initial w1:\t", w1
     print "random initial w2:\t", w2
     print "random initial b:\t", b
-    
+
     epoch = 0
     # training set size : validation set size = 3 : 1
     training_set_index = 0
@@ -119,7 +119,7 @@ def train_and_get_result(x1, x2, lr, batch_size):
         # validation
         for x1i, x2i, yi in zip(x1_validation, x2_validation, y_validation):
             curr_validation_error += abs(yi - (x1i * w1 + x2i * w2 + b))
-            
+
         # get error from the entire set for later plotting
         error = 0
         for x1i, x2i, yi in zip(x1, x2, y):
@@ -315,7 +315,3 @@ train_and_get_result(x1, x2, lr = 0.005, batch_size = 100)
 
 
 # In[ ]:
-
-
-
-
