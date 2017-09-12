@@ -45,8 +45,8 @@ def plot_epochs_bar(epochs_bar):
     ind = np.arange(len(x_axis))
     plt.bar(ind, y_axis)
     plt.xticks(ind, x_axis)
-    plt.xlabel('epoch num when converge')
-    plt.ylabel('training set size')
+    plt.ylabel('epoch num when converge')
+    plt.xlabel('training set size')
     plt.show()
 
 def sigmoid(x):
@@ -139,12 +139,12 @@ def train_and_get_result(x1, x2, first_n, lr, batch_size):
     print "Result: w1:\t", w1, "\tw2:\t", w2, "\tb:\t", b, "\tnum of epoch:\t", epoch
 
 # online
-# learning rate lr = 0.0001
-train_and_get_result(x1, x2, first_n = 5, lr = 0.0001, batch_size = 1)
-train_and_get_result(x1, x2, first_n = 10, lr = 0.0001, batch_size = 1)
-train_and_get_result(x1, x2, first_n = 25, lr = 0.0001, batch_size = 1)
-train_and_get_result(x1, x2, first_n = 50, lr = 0.0001, batch_size = 1)
-train_and_get_result(x1, x2, first_n = 75, lr = 0.0001, batch_size = 1)
+# learning rate lr = 0.0002
+train_and_get_result(x1, x2, first_n = 5, lr = 0.0002, batch_size = 1)
+train_and_get_result(x1, x2, first_n = 10, lr = 0.0002, batch_size = 1)
+train_and_get_result(x1, x2, first_n = 25, lr = 0.0002, batch_size = 1)
+train_and_get_result(x1, x2, first_n = 50, lr = 0.0002, batch_size = 1)
+train_and_get_result(x1, x2, first_n = 75, lr = 0.0002, batch_size = 1)
 
 plot_epochs_bar(epochs_bar)
 
