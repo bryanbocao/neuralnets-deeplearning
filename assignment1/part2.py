@@ -32,7 +32,10 @@ def plot_error_epoch(errors, lr, batch_size):
     title += 'lr:'
     title += str(lr)
     title += ' batch_size:'
-    title += str(batch_size)
+    if batch_size < 75:
+        title += str(batch_size)
+    else:
+        title += str(100)
     plt.title(title)
     plt.xlabel('epoch')
     plt.ylabel('error')
@@ -49,7 +52,10 @@ def plot_distances_to_correct_solution(distances_to_correct_w, lr, batch_size):
     title += 'lr:'
     title += str(lr)
     title += ' batch_size:'
-    title += str(batch_size)
+    if batch_size < 75:
+        title += str(batch_size)
+    else:
+        title += str(100)
     plt.title(title)
     plt.xlabel('epoch')
     plt.ylabel('distances_to_correct_w')
@@ -134,8 +140,10 @@ def train_and_get_result(x1, x2, lr, batch_size):
     plot_error_epoch(errors, lr, batch_size)
     plot_distances_to_correct_solution(distances_to_correct_w, lr, batch_size)
     print "Result: pre_validation_error:\t", pre_validation_error, "curr_validation_error:\t", curr_validation_error
-    print "Result: w1:\t", w1, "\tw2:\t", w2, "\tb:\t", b, "\tnum of epoch:\t", epoch, "\tlr:\t", lr, "\tbatch_size:\t", batch_size
-
+    if batch_size < 75:
+        print "Result: w1:\t", w1, "\tw2:\t", w2, "\tb:\t", b, "\tnum of epoch:\t", epoch, "\tlr:\t", lr, "\tbatch_size:\t", batch_size
+    else
+        print "Result: w1:\t", w1, "\tw2:\t", w2, "\tb:\t", b, "\tnum of epoch:\t", epoch, "\tlr:\t", lr, "\tbatch_size:\t", 100
 # online
 # learning rate lr = 0.0001
 #train_and_get_result(x1, x2, lr = 0.0001, batch_size = 1)
@@ -154,7 +162,7 @@ def train_and_get_result(x1, x2, lr, batch_size):
 
 # online
 # learning rate lr = 0.01
-train_and_get_result(x1, x2, lr = 0.01, batch_size = 1)
+#train_and_get_result(x1, x2, lr = 0.01, batch_size = 1)
 
 
 # minibatch batch_size = 5
@@ -175,47 +183,47 @@ train_and_get_result(x1, x2, lr = 0.01, batch_size = 1)
 
 # minibatch batch_size = 25
 # learning rate lr = 0.0005
-train_and_get_result(x1, x2, lr = 0.0005, batch_size = 25)
+#train_and_get_result(x1, x2, lr = 0.0005, batch_size = 25)
 
 # minibatch batch_size = 50
 # learning rate lr = 0.0005
-train_and_get_result(x1, x2, lr = 0.0005, batch_size = 50)
+#train_and_get_result(x1, x2, lr = 0.0005, batch_size = 50)
 
 # minibatch batch_size = 5
 # learning rate lr = 0.001
-train_and_get_result(x1, x2, lr = 0.001, batch_size = 5)
+#train_and_get_result(x1, x2, lr = 0.001, batch_size = 5)
 
 # minibatch batch_size = 25
 # learning rate lr = 0.001
-train_and_get_result(x1, x2, lr = 0.001, batch_size = 25)
+#train_and_get_result(x1, x2, lr = 0.001, batch_size = 25)
 
 # minibatch batch_size = 50
 # learning rate lr = 0.001
-train_and_get_result(x1, x2, lr = 0.001, batch_size = 50)
+# train_and_get_result(x1, x2, lr = 0.001, batch_size = 50)
 
 # minibatch batch_size = 5
 # learning rate lr = 0.005
-train_and_get_result(x1, x2, lr = 0.005, batch_size = 5)
+#train_and_get_result(x1, x2, lr = 0.005, batch_size = 5)
 
 # minibatch batch_size = 25
 # learning rate lr = 0.005
-train_and_get_result(x1, x2, lr = 0.005, batch_size = 25)
+#train_and_get_result(x1, x2, lr = 0.005, batch_size = 25)
 
 # minibatch batch_size = 50
 # learning rate lr = 0.005
-train_and_get_result(x1, x2, lr = 0.005, batch_size = 50)
+#train_and_get_result(x1, x2, lr = 0.005, batch_size = 50)
 
 # minibatch batch_size = 5
 # learning rate lr = 0.01
-train_and_get_result(x1, x2, lr = 0.01, batch_size = 5)
+#train_and_get_result(x1, x2, lr = 0.01, batch_size = 5)
 
 # minibatch batch_size = 25
 # learning rate lr = 0.01
-train_and_get_result(x1, x2, lr = 0.01, batch_size = 25)
+#train_and_get_result(x1, x2, lr = 0.01, batch_size = 25)
 
 # minibatch batch_size = 50
 # learning rate lr = 0.01
-train_and_get_result(x1, x2, lr = 0.01, batch_size = 50)
+# train_and_get_result(x1, x2, lr = 0.01, batch_size = 50)
 
 
 # batch
@@ -224,7 +232,7 @@ train_and_get_result(x1, x2, lr = 0.01, batch_size = 50)
 
 # batch
 # learning rate lr = 0.0005
-train_and_get_result(x1, x2, lr = 0.0005, batch_size = 100)
+#train_and_get_result(x1, x2, lr = 0.0005, batch_size = 100)
 
 # batch
 # learning rate lr = 0.001
@@ -232,9 +240,9 @@ train_and_get_result(x1, x2, lr = 0.001, batch_size = 100)
 
 # batch
 # learning rate lr = 0.005
-train_and_get_result(x1, x2, lr = 0.005, batch_size = 100)
+#train_and_get_result(x1, x2, lr = 0.005, batch_size = 100)
 
 # batch
 # learning rate lr = 0.01
-train_and_get_result(x1, x2, lr = 0.01, batch_size = 100)
+#train_and_get_result(x1, x2, lr = 0.01, batch_size = 100)
 # reference: http://cs229.stanford.edu/notes/cs229-notes1.pdf
