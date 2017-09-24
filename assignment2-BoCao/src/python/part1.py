@@ -7,7 +7,7 @@
 import numpy as np
 import random
 import copy
-#import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 
 train_data = np.genfromtxt('../data/assign2_train_data.txt', delimiter=',')
 #print "train_data:", train_data
@@ -159,7 +159,7 @@ def train(n_data, lr, bs):
     n_lt = n_data[:, 2]
     n_co2 = n_data[:, 3]
     n_hu_r = n_data[:, 4]
-    while epoch <= 2500:
+    while epoch <= 12000:
         # train
         i = 0
         for (n_t_i, n_hu_i, n_lt_i, n_co2_i, n_hu_r_i, o_i) in zip(n_t, n_hu, n_lt, n_co2, n_hu_r, o):
@@ -207,6 +207,7 @@ def train(n_data, lr, bs):
     print "Training ends."
     print "Initial weights:", init_ws
     print "Trained weights:", ws
+    print "Trained data accuracy:", accuracies[-1]
     plot_accuracy(accuracies, lr, bs, stage="train")
     
 def test(test_data, o, lr, bs):
@@ -218,12 +219,8 @@ def test(test_data, o, lr, bs):
     n_lt = n_test_data[:, 2]
     n_co2 = n_test_data[:, 3]
     n_hu_r = n_test_data[:, 4]
-    for (n_t_i, n_hu_i, n_lt_i, n_co2_i, n_hu_r_i, o_i) in zip(n_t, n_hu, n_lt, n_co2, n_hu_r, o):
-        #test every epoch
-        accuracy = get_one_feedforward_accuracy(n_data, ws, o)
-        accuracies.append(accuracy)
-        print "epoch:", epoch, " accuracy:",accuracy
-    plot_accuracy(accuracies, lr, bs, stage="test")
+    accuracy = get_one_feedforward_accuracy(n_data, ws, o)
+    print "Test data accuracy:",accuracy
         
 def get_one_feedforward_accuracy(n_data, ws, o):
     
@@ -249,7 +246,7 @@ def plot_accuracy(accuracies, lr, bs, stage):
     for i in range(len(accuracies)):
         epochs.append(i)
     epochs_x = np.array(epochs)
-    plt.plot(epochs_x, accs_y, epochs_x)
+    plt.plot(epochs_x, accs_y)
     title = stage
     title += ' lr:'
     title += str(lr)
