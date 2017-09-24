@@ -1,11 +1,13 @@
 
 # coding: utf-8
 
-# In[59]:
+# In[39]:
 
 
 import numpy as np
 import random
+import copy
+#import matplotlib.pyplot as plt
 
 train_data = np.genfromtxt('../data/assign2_train_data.txt', delimiter=',')
 #print "train_data:", train_data
@@ -33,62 +35,75 @@ print "hu_r: ", hu_r
 print "o: ", o
 
 
-# In[60]:
+# In[40]:
 
 
-#normalize inputs
+def normalize(data):
+    #normalize train data
+    #normalize t
+    t = data[:, 0]
+    t_min = np.min(t)
+    t_max = np.max(t)
+    d_t = t_max - t_min
+    #normalized t: n_t
+    n_t = []
+    for each in t:
+        n_t.append((each - t_min) / d_t)
 
-#normalize t
-t_min = np.min(t)
-t_max = np.max(t)
-d_t = t_max - t_min
-#normalized t: n_t
-n_t = []
-for each in t:
-    n_t.append((each - t_min) / d_t)
+    #normalize hu
+    hu = data[:, 1]
+    hu_min = np.min(hu)
+    hu_max = np.max(hu)
+    d_hu = hu_max - hu_min
+    #normalized h: n_hu
+    n_hu = []
+    for each in hu:
+        n_hu.append((each - hu_min) / d_hu)
 
-#normalize hu
-hu_min = np.min(hu)
-hu_max = np.max(hu)
-d_hu = hu_max - hu_min
-#normalized h: n_hu
-n_hu = []
-for each in hu:
-    n_hu.append((each - hu_min) / d_hu)
+    #normalize lt
+    lt = data[:, 2]
+    lt_min = np.min(lt)
+    lt_max = np.max(lt)
+    d_lt = lt_max - lt_min
+    #normalized lt: n_lt
+    n_lt = []
+    for each in lt:
+        n_lt.append((each - lt_min) / d_lt)
 
-#normalize lt
-lt_min = np.min(lt)
-lt_max = np.max(lt)
-d_lt = lt_max - lt_min
-#normalized lt: n_lt
-n_lt = []
-for each in lt:
-    n_lt.append((each - lt_min) / d_lt)
+    #normalize co2
+    co2 = data[:, 3]
+    co2_min = np.min(co2)
+    co2_max = np.max(co2)
+    d_co2 = co2_max - co2_min
+    #normalized co2: n_co2
+    n_co2 = []
+    for each in co2:
+        n_co2.append((each - co2_min) / d_co2)
 
-#normalize co2
-co2_min = np.min(co2)
-co2_max = np.max(co2)
-d_co2 = co2_max - co2_min
-#normalized co2: n_co2
-n_co2 = []
-for each in co2:
-    n_co2.append((each - co2_min) / d_co2)
+    #normalize hu_r
+    hu_r = data[:, 4]
+    hu_r_min = np.min(hu_r)
+    hu_r_max = np.max(hu_r)
+    d_hu_r = hu_r_max - hu_r_min
+    #normalized hu_r: n_hu_r
+    n_hu_r = []
+    for each in hu_r:
+        n_hu_r.append((each - hu_r_min) / d_hu_r)
 
-#normalize hu_r
-hu_r_min = np.min(hu_r)
-hu_r_max = np.max(hu_r)
-d_hu_r = hu_r_max - hu_r_min
-#normalized hu_r: n_hu_r
-n_hu_r = []
-for each in hu_r:
-    n_hu_r.append((each - hu_r_min) / d_hu_r)
+    #normalized data: n_data
+    n_data = np.column_stack((n_t, n_hu, n_lt, n_co2, n_hu_r))
     
-#normalized data: n_data
-n_data = np.column_stack((n_t, n_hu, n_lt, n_co2, n_hu_r))
+    return n_data
+
+
+# In[41]:
+
+
+n_data = normalize(data)
 print "n_data:", n_data
 
 
-# In[61]:
+# In[42]:
 
 
 def initialize_weights():
@@ -103,11 +118,13 @@ def initialize_weights():
     ws = [w_t, w_hu, w_lt, w_co2, w_hu_r, b]
     return ws
 
-ws = initialize_weights()
+
+init_ws = initialize_weights()
+ws = copy.deepcopy(init_ws)
 print "ws: ", ws
 
 
-# In[96]:
+# In[43]:
 
 
 def sigmoid(x):
@@ -133,6 +150,11 @@ def train(n_data, lr, bs):
     
     accuracies = []
     epoch = 0
+    n_t = n_data[:, 0]
+    n_hu = n_data[:, 1]
+    n_lt = n_data[:, 2]
+    n_co2 = n_data[:, 3]
+    n_hu_r = n_data[:, 4]
     while epoch <= 25000:
         # train
         i = 0
@@ -178,6 +200,14 @@ def train(n_data, lr, bs):
         # count 
         epoch += 1
     print "Training ends."
+    print "Initial weights:", init_ws
+    print "Trained weights:", ws
+    plot_accuracy(accuracies, lr, bs)
+    
+def test(test_data):
+    #normalize test data
+    #normalize t
+    n_test_data = normalize(test_data)
         
 def get_one_feedforward_accuracy(n_data, ws, o):
     
@@ -197,18 +227,35 @@ def get_one_feedforward_accuracy(n_data, ws, o):
     ##calculate accuracy
     return accuracy
     
+def plot_accuracy(accuracies, lr, bs):
+    accs_y = np.array(accuracies)
+    epochs = []
+    for i in rage(len(accuracies)):
+        epochs.append(i)
+    epochs_x = np.array(epochs)
+    plt.plot(epochs_x, accs_y)
+    title = 'lr:'
+    title += str(lr)
+    title += 'batch_size:'
+    tltle += str(bs)
+    plt.title(title)
+    plt.xlabel('epoch')
+    plt.ylable('accuracy')
+    plt.show()
 
 
-# In[97]:
+# In[44]:
 
 
 train(n_data, lr = 0.0001, bs = 1)
 
 
-# In[ ]:
+# In[45]:
 
 
-
+test_data = np.genfromtxt('../data/assign2_test_data.txt', delimiter=',')
+print "test_data:", test_data
+#test(test_data)
 
 
 # In[ ]:
