@@ -82,7 +82,7 @@ d_hu_r = hu_r_max - hu_r_min
 n_hu_r = []
 for each in hu_r:
     n_hu_r.append((each - hu_r_min) / d_hu_r)
-
+    
 #normalized data: n_data
 n_data = np.column_stack((n_t, n_hu, n_lt, n_co2, n_hu_r))
 print "n_data:", n_data
@@ -107,7 +107,7 @@ ws = initialize_weights()
 print "ws: ", ws
 
 
-# In[80]:
+# In[96]:
 
 
 def sigmoid(x):
@@ -129,12 +129,11 @@ def perceptron(ins, ws):
 # lr - learning rate
 # bs - batch size
 def train(n_data, lr, bs):
-
-    print "len of data:", len(n_data)
-
-    accuracy = []
+    print "Training starts: len of data:", len(n_data)
+    
+    accuracies = []
     epoch = 0
-    while epoch <= 2500:
+    while epoch <= 25000:
         # train
         i = 0
         for (n_t_i, n_hu_i, n_lt_i, n_co2_i, n_hu_r_i, o_i) in zip(n_t, n_hu, n_lt, n_co2, n_hu_r, o):
@@ -144,7 +143,7 @@ def train(n_data, lr, bs):
             sum_error_w_co2 = 0
             sum_error_w_hu_r = 0
             sum_error_b = 0
-
+            
             error = o_i - (n_t_i * ws[0] + n_hu_i * ws[1] + n_lt_i * ws[2] + n_co2_i * ws[3] + n_hu_r_i * ws[4] + ws[5])
             sum_error_w_t += error * n_t_i
             sum_error_w_hu += error * n_hu_i
@@ -152,7 +151,7 @@ def train(n_data, lr, bs):
             sum_error_w_co2 += error * n_co2_i
             sum_error_w_hu_r += error * n_hu_r_i
             sum_error_b += error
-
+            
             if i >= bs: # only update weights after one batch size
                 ws[0] += lr * sum_error_w_t
                 ws[1] += lr * sum_error_w_hu
@@ -168,31 +167,39 @@ def train(n_data, lr, bs):
                 sum_error_b = 0
                 i = 1
                 continue
-
-            #calculate accuracy
-            #outputs
-            os = []
-            for each in zip(n_data):
-                for ins in each:
-                    os.append(perceptron(ins, ws))
-
-            #count correct output number
-            correct_cnt = 0
-            for o_i, os_i in zip(o, os):
-                if (o_i == os_i):
-                    correct_cnt += 1
-            accuracy = float(correct_cnt) / float(len(o))
-            print "epoch:", epoch, "correct_cnt:", correct_cnt, " accuracy",accuracy
-            ##calculate accuracy
-
+            
+            #test every epoch
+            accuracy = get_one_feedforward_accuracy(n_data, ws, o)
+            accuracies.append(accuracy)
+            print "epoch:", epoch, " accuracy:",accuracy
+            
             i += 1
-
-        # count
-
+        
+        # count 
         epoch += 1
+    print "Training ends."
+        
+def get_one_feedforward_accuracy(n_data, ws, o):
+    
+    #calculate accuracy
+    #outputs
+    os = []
+    for each in zip(n_data):
+        for ins in each:
+            os.append(perceptron(ins, ws))
+            
+    #count correct output number
+    correct_cnt = 0
+    for o_i, os_i in zip(o, os):
+        if (o_i == os_i):
+            correct_cnt += 1
+    accuracy = float(correct_cnt) / float(len(o))
+    ##calculate accuracy
+    return accuracy
+    
 
 
-# In[81]:
+# In[97]:
 
 
 train(n_data, lr = 0.0001, bs = 1)
@@ -205,3 +212,7 @@ train(n_data, lr = 0.0001, bs = 1)
 
 
 # In[ ]:
+
+
+
+
