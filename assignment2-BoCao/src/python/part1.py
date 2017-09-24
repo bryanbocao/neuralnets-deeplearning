@@ -145,6 +145,10 @@ def perceptron(ins, ws):
 
 # lr - learning rate
 # bs - batch size
+# set lr and bs
+lr = 0.001
+bs = 1
+
 def train(n_data, lr, bs):
     print "Training starts: len of data:", len(n_data)
     
@@ -155,7 +159,7 @@ def train(n_data, lr, bs):
     n_lt = n_data[:, 2]
     n_co2 = n_data[:, 3]
     n_hu_r = n_data[:, 4]
-    while epoch <= 25000:
+    while epoch <= 2500:
         # train
         i = 0
         for (n_t_i, n_hu_i, n_lt_i, n_co2_i, n_hu_r_i, o_i) in zip(n_t, n_hu, n_lt, n_co2, n_hu_r, o):
@@ -193,7 +197,8 @@ def train(n_data, lr, bs):
             #test every epoch
             accuracy = get_one_feedforward_accuracy(n_data, ws, o)
             accuracies.append(accuracy)
-            print "epoch:", epoch, " accuracy:",accuracy
+            if epoch % 100 == 0:
+                print "epoch:", epoch, " accuracy:",accuracy
             
             i += 1
         
@@ -202,12 +207,23 @@ def train(n_data, lr, bs):
     print "Training ends."
     print "Initial weights:", init_ws
     print "Trained weights:", ws
-    plot_accuracy(accuracies, lr, bs)
+    plot_accuracy(accuracies, lr, bs, stage="train")
     
-def test(test_data):
+def test(test_data, o, lr, bs):
     #normalize test data
     #normalize t
     n_test_data = normalize(test_data)
+    n_t = n_test_data[:, 0]
+    n_hu = n_test_data[:, 1]
+    n_lt = n_test_data[:, 2]
+    n_co2 = n_test_data[:, 3]
+    n_hu_r = n_test_data[:, 4]
+    for (n_t_i, n_hu_i, n_lt_i, n_co2_i, n_hu_r_i, o_i) in zip(n_t, n_hu, n_lt, n_co2, n_hu_r, o):
+        #test every epoch
+        accuracy = get_one_feedforward_accuracy(n_data, ws, o)
+        accuracies.append(accuracy)
+        print "epoch:", epoch, " accuracy:",accuracy
+    plot_accuracy(accuracies, lr, bs, stage="test")
         
 def get_one_feedforward_accuracy(n_data, ws, o):
     
@@ -227,20 +243,21 @@ def get_one_feedforward_accuracy(n_data, ws, o):
     ##calculate accuracy
     return accuracy
     
-def plot_accuracy(accuracies, lr, bs):
+def plot_accuracy(accuracies, lr, bs, stage):
     accs_y = np.array(accuracies)
     epochs = []
-    for i in rage(len(accuracies)):
+    for i in range(len(accuracies)):
         epochs.append(i)
     epochs_x = np.array(epochs)
-    plt.plot(epochs_x, accs_y)
-    title = 'lr:'
+    plt.plot(epochs_x, accs_y, epochs_x)
+    title = stage
+    title += ' lr:'
     title += str(lr)
-    title += 'batch_size:'
-    tltle += str(bs)
+    title += ' batch_size:'
+    title += str(bs)
     plt.title(title)
     plt.xlabel('epoch')
-    plt.ylable('accuracy')
+    plt.ylabel('accuracy')
     plt.show()
 
 
@@ -254,8 +271,8 @@ train(n_data, lr = 0.0001, bs = 1)
 
 
 test_data = np.genfromtxt('../data/assign2_test_data.txt', delimiter=',')
-print "test_data:", test_data
-#test(test_data)
+# print "test_data:", test_data
+test(test_data, o, lr, bs)
 
 
 # In[ ]:
