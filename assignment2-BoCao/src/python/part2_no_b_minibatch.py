@@ -226,11 +226,18 @@ def train(n_data, o, lr, H, bs):
 
     delta2 = 0 # delta from the output layer
     delta1 = [] # deltas from hidden layer nodes
-    while epoch <= 20:
+
+    delta_ws0 = np.zeros((H, 5))
+    delta_ws1 = np.zeros(H)
+    while epoch <= 10000:
 
         i_data = 0 # index in the traning data list
         i_bs = 0 # index of batch size
         err2 = 0 # output layer error
+
+
+        #print "delta_ws0", delta_ws0
+        #print "delta_ws1", delta_ws1
         # one epoch
         while i_data < len(n_t):
 
@@ -254,37 +261,65 @@ def train(n_data, o, lr, H, bs):
             # err2 += error_function(net_o, o[i_data]) # output layer error
             # print "err2: ", err2
 
+
+            ### update ws1: weights from hidden layer to output layer
+            # Derivative of err2 with respect to ws1
+            # Reference: https://www.youtube.com/watch?v=zpykfC4VnpM, https://page.mi.fu-berlin.de/rojas/neural/chapter/K7.pdf
+            # d_err2_ws1 = -(net_o - o[i_data]) * sigmoidPrime(net_o) * hidden_os
+
+            #delta2 = net_o * (1 - net_o) * (net_o - o[i_data])# output layers delta
+            delta2 = net_o * (1 - net_o) * (o[i_data] - net_o)
+            #print "net_o:", net_o, " o[i_data]: ", o[i_data]
+            # print "net_o - o[i_data]: ", net_o - o[i_data]
+
+            #ws1 += ws1 + lr * err2 * hidden_os
+            #print "delta2:", delta2
+            # print "hidden_os: ", hidden_os
+
+            delta_ws1_t = []
+            for i_hidden_node in range(H):
+                # print "hidden_os[i_hidden_node]:", hidden_os[i_hidden_node]
+                delta1.append(hidden_os[i_hidden_node] * (1 - hidden_os[i_hidden_node]) * delta2 * ws1[i_hidden_node])
+                #print "delta1: ", delta1
+                #delta_ws1.append(-lr * delta2 * hidden_os[i_hidden_node])
+                delta_ws1_t.append(lr * delta2 * hidden_os[i_hidden_node])
+
+            # append bias delta
+            #delta_b1 = -lr * delta2
+            #delta_b1 = lr * delta2
+            #delta_ws1.append(delta_b1)
+            # print "delta_ws1: ", delta_ws1
+
+
+            for ii in range(len(delta_ws1)):
+                delta_ws1[ii] += delta_ws1_t[ii]
+            #print "delta_ws1" , delta_ws1
+
+            ### update ws0: weights from input layer to hidden layer
+            # print "delta1 :", delta1
+            ins = train_n_data[i_data] # one input layer
+            # print "ins: ", ins
+
+            delta_ws0_t = []
+            for ii in range(len(ws0)):
+                delta_ws0_tt = []
+                for jj in range(len(ws0[0])):
+                    delta_weight = lr * delta1[ii] * ins[jj]
+                    delta_ws0_tt.append(delta_weight)
+                    #print "ws0[ii] :", ws0[ii]
+                    #print "ins[jj] :", ins[jj]
+                    #print "ws0[ii][jj] :", ws0[ii][jj]
+                    #print "delta_weight: ", delta_weight
+                delta_ws0_t.append(delta_ws0_tt)
+
+            for ii in range(len(delta_ws0)):
+                for jj in range(len(delta_ws0[0])):
+                    delta_ws0[ii][jj] += delta_ws0_t[ii][jj]
+            #print "delta_ws0:", delta_ws0
+
             # only update weights after bs batch_size
             # print "o:",o
             if i_bs >= bs:
-                ### update ws1: weights from hidden layer to output layer
-                # Derivative of err2 with respect to ws1
-                # Reference: https://www.youtube.com/watch?v=zpykfC4VnpM, https://page.mi.fu-berlin.de/rojas/neural/chapter/K7.pdf
-                # d_err2_ws1 = -(net_o - o[i_data]) * sigmoidPrime(net_o) * hidden_os
-
-                #delta2 = net_o * (1 - net_o) * (net_o - o[i_data])# output layers delta
-                delta2 = net_o * (1 - net_o) * (o[i_data] - net_o)
-                #print "net_o:", net_o, " o[i_data]: ", o[i_data]
-                # print "net_o - o[i_data]: ", net_o - o[i_data]
-
-                #ws1 += ws1 + lr * err2 * hidden_os
-                #print "delta2:", delta2
-                # print "hidden_os: ", hidden_os
-
-                delta_ws1 = []
-                for i_hidden_node in range(H):
-                    # print "hidden_os[i_hidden_node]:", hidden_os[i_hidden_node]
-                    delta1.append(hidden_os[i_hidden_node] * (1 - hidden_os[i_hidden_node]) * delta2 * ws1[i_hidden_node])
-                    #print "delta1: ", delta1
-                    #delta_ws1.append(-lr * delta2 * hidden_os[i_hidden_node])
-                    delta_ws1.append(lr * delta2 * hidden_os[i_hidden_node])
-
-                # append bias delta
-                #delta_b1 = -lr * delta2
-                #delta_b1 = lr * delta2
-                #delta_ws1.append(delta_b1)
-                # print "delta_ws1: ", delta_ws1
-
                 # print "ws1 before updated: ", ws1
                 # print "delta_ws1: ", delta_ws1
                 # update ws1 - weights from hidden layer to output layer
@@ -295,7 +330,6 @@ def train(n_data, o, lr, H, bs):
                     print "ws1[ii]: before updated\t", ws1[ii]
                     print "delta_ws1[ii]:" , delta_ws1[ii]
                     '''
-
                     ws1[ii] += delta_ws1[ii]
                     #print "ws1[ii]: after updated\t", ws1[ii]
                     #ws1[ii] += 100
@@ -303,43 +337,16 @@ def train(n_data, o, lr, H, bs):
                 #print "   "
                 ### end of updating ws1
 
-                ### update ws0: weights from input layer to hidden layer
-                delta1 = []
-                ins = train_n_data[i_data] # one input layer
-                # print "ins: ", ins
-                for ii in range(len(ins)):
-                    sum_of_delta2_ws0 = 0
-                    ws0_input_node_i_to_all_hidden_nodes = ws0[:, ii]
-                    #print "len(ws0_input_node_i_to_all_hidden_nodes): ", len(ws0_input_node_i_to_all_hidden_nodes)
-                    for jj in range(len(ws0_input_node_i_to_all_hidden_nodes)):
-                        sum_of_delta2_ws0 += delta2 * ws0_input_node_i_to_all_hidden_nodes[jj]
-                    deltaii = ins[ii] * (1 - ins[ii]) * sum_of_delta2_ws0
-                    # print "deltajj:", deltajj
-                    delta1.append(deltaii)
-
-                # print "delta1: ", delta1
-                # print "len(ins):" , len(ins)
-                # print "len(delta1):", len(delta1)
-
-                ## update ws0 specifically
-                # print "ws0 before updated: ", ws0
-                for ii in range(len(ws0)): # each row is the list of weights from all inputs layer to one hidden layer
+                ### update ws0
+                #print "delta_ws1", delta_ws1, "i_data: ", i_data, " i_bs: ", i_bs
+                #print "delta_ws0", delta_ws0, "i_data: ", i_data, " i_bs: ", i_bs
+                for ii in range(len(ws0)):
                     for jj in range(len(ws0[0])):
-                        delta_w = 0
-                        #if (jj < len(ws0[0]) - 1):
-                        #delta_w = -lr * delta1[jj] * ins[jj]
-                        delta_w = lr * delta1[jj] * ins[jj]
-                        #else: # bias
-                        #    delta_w = lr * delta1[jj]
-                        ws0[ii][jj] += delta_w
-                        # print "ws0[ii][jj]:", ws0[ii][jj]
-                # print "ws0 after  updated: ", ws0
-                # print "     "
-                ## end of updating ws0 specifically
+                        ws0[ii][jj] += delta_ws0[ii][jj]
                 ### end of updating ws0
 
-                #delta2 = 0
-                err2 = 0
+                delta_ws0 = np.zeros((H, 5))
+                delta_ws1 = np.zeros(H)
                 i_bs = -1
 
             hidden_os = []
@@ -358,6 +365,7 @@ def train(n_data, o, lr, H, bs):
             print "Test accuracy:\t", test_accuracy
             print "ws0 :", ws0
             print "ws1 :", ws1
+            # print "delta1: ", delta1
             print "delta2: ", delta2
         epoch += 1
 
@@ -459,7 +467,7 @@ def plot_accuracy(train_accuracies, test_accuracies, lr, bs):
 # In[25]:
 
 
-train(n_data, o, lr = 0.01, H = 5, bs = 1)
+train(n_data, o, lr = 0.0001, H = 3, bs = 10)
 
 
 # In[ ]:

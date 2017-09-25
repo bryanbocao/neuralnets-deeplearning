@@ -232,7 +232,6 @@ def train(n_data, o, lr, H, bs):
         i_bs = 0 # index of batch size
         err2 = 0 # output layer error
 
-        
         # one epoch
         while i_data < len(n_t):
 
