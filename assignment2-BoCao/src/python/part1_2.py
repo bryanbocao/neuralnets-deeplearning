@@ -114,12 +114,12 @@ print "n_data:", n_data
 
 
 def initialize_weights():
-    w_t = random.random()
-    w_hu = random.random()
-    w_lt = random.random()
-    w_co2 = random.random()
-    w_hu_r = random.random()
-    b = random.random()
+    w_t = random.random() * 2
+    w_hu = random.random() * 2
+    w_lt = random.random() * 2
+    w_co2 = random.random() * 2
+    w_hu_r = random.random() * 2
+    b = random.random() * 2
 
     #weights
     ws = [w_t, w_hu, w_lt, w_co2, w_hu_r, b]
@@ -168,7 +168,7 @@ def train(n_data, lr, bs):
     n_lt = n_data[:, 2]
     n_co2 = n_data[:, 3]
     n_hu_r = n_data[:, 4]
-    while epoch <= 9000:
+    while epoch <= 1000:
         # train
         i = 0
         for (n_t_i, n_hu_i, n_lt_i, n_co2_i, n_hu_r_i, o_i) in zip(n_t, n_hu, n_lt, n_co2, n_hu_r, o):
@@ -179,7 +179,8 @@ def train(n_data, lr, bs):
             sum_error_w_hu_r = 0
             sum_error_b = 0
 
-            error = o_i - (n_t_i * ws[0] + n_hu_i * ws[1] + n_lt_i * ws[2] + n_co2_i * ws[3] + n_hu_r_i * ws[4] + ws[5])
+            #error = o_i - (n_t_i * ws[0] + n_hu_i * ws[1] + n_lt_i * ws[2] + n_co2_i * ws[3] + n_hu_r_i * ws[4] + ws[5])
+            error = o_i - sigmoid(n_t_i * ws[0] + n_hu_i * ws[1] + n_lt_i * ws[2] + n_co2_i * ws[3] + n_hu_r_i * ws[4] + ws[5])
             sum_error_w_t += error * n_t_i
             sum_error_w_hu += error * n_hu_i
             sum_error_w_lt += error * n_lt_i
@@ -208,7 +209,7 @@ def train(n_data, lr, bs):
             train_accuracies.append(train_accuracy)
             test_accuracy = test(n_test_data, ws, o_test)
             test_accuracies.append(test_accuracy)
-            if epoch % 50 == 0:
+            if epoch % 10 == 0:
                 print "   "
                 print "epoch:", epoch
                 print "train accuracy:\t", train_accuracy
@@ -291,4 +292,4 @@ def plot_accuracy(train_accuracies, test_accuracies, lr, bs):
 # In[48]:
 
 
-train(n_data, lr = 0.01, bs = 1)
+train(n_data, lr = 0.0001, bs = 1)

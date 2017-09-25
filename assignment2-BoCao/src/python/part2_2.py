@@ -138,6 +138,7 @@ print "ws1: ", ws1
 def initialize_weights(i, j):
     ws = np.random.rand(j, i + 1)
     return ws
+    #return np.dot(ws, 3)
 
 
 # In[8]:
@@ -253,7 +254,10 @@ def train(n_data, o, lr, H, bs):
                 # Derivative of err2 with respect to ws1
                 # Reference: https://www.youtube.com/watch?v=zpykfC4VnpM, https://page.mi.fu-berlin.de/rojas/neural/chapter/K7.pdf
                 # d_err2_ws1 = -(net_o - o[i_data]) * sigmoidPrime(net_o) * hidden_os
+
                 delta2 = net_o * (1 - net_o) * (net_o - o[i_data])# output layers delta
+
+
                 #ws1 += ws1 + lr * err2 * hidden_os
                 # print "delta2:", delta2
 
@@ -281,8 +285,8 @@ def train(n_data, o, lr, H, bs):
                     # print "delta_ws1[ii]:" , delta_ws1[ii]
                     ws1[ii] += delta_ws1[ii]
                     #ws1[ii] += 100
-                # print "ws1 after  updated: ", ws1
-                # print "   "
+                print "ws1 after  updated: ", ws1
+                print "   "
                 ### end of updating ws1
 
                 ### update ws0: weights from input layer to hidden layer
@@ -306,7 +310,11 @@ def train(n_data, o, lr, H, bs):
                 # print "ws0 before updated: ", ws0
                 for ii in range(len(ws0)): # each row is the list of weights from all inputs layer to one hidden layer
                     for jj in range(len(ws0[0])):
-                        delta_w = -lr * delta1[jj] * ins[jj]
+                        delta_w = 0
+                        if (jj < len(ws0[0]) - 1):
+                            delta_w = -lr * delta1[jj] * ins[jj]
+                        else: # bias
+                            delta_w =lr * delta1[jj]
                         ws0[ii][jj] += delta_w
                 # print "ws0 after  updated: ", ws0
                 # print "     "
@@ -429,7 +437,7 @@ def plot_accuracy(train_accuracies, test_accuracies, lr, bs):
 # In[25]:
 
 
-train(n_data, o, lr = 0.1, H = 2, bs = 1)
+train(n_data, o, lr = 0.01, H = 2, bs = 1)
 
 
 # In[ ]:
