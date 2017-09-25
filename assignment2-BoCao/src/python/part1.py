@@ -168,7 +168,11 @@ def train(n_data, lr, bs):
     n_lt = n_data[:, 2]
     n_co2 = n_data[:, 3]
     n_hu_r = n_data[:, 4]
+<<<<<<< HEAD
     while epoch <= 9000:
+=======
+    while epoch <= 10000:
+>>>>>>> 3a982a0e6dd0ad8c4960f90ce5131816926c1a92
         # train
         i = 0
         for (n_t_i, n_hu_i, n_lt_i, n_co2_i, n_hu_r_i, o_i) in zip(n_t, n_hu, n_lt, n_co2, n_hu_r, o):
