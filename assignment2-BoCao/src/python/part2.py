@@ -391,13 +391,15 @@ def get_one_feedforward_accuracy(n_data, H, ws0, ws1, o_t):
     ##calculate accuracy
     return accuracy
 
-def plot_accuracy(accuracies, lr, bs, stage):
-    accs_y = np.array(accuracies)
+def plot_accuracy(train_accuracies, test_accuracies, lr, bs):
+    train_accs_y = np.array(train_accuracies)
     epochs = []
-    for i in range(len(accuracies)):
+    for i in range(len(train_accuracies)):
         epochs.append(i)
     epochs_x = np.array(epochs)
-    plt.plot(epochs_x, accs_y)
+    plt.plot(epochs_x, train_accs_y, label = "train accuracy")
+    test_accs_y = np.array(test_accuracies)
+    plt.plot(epochs_x, test_accs_y, label = "test accuracy")
     title = stage
     title += ' lr:'
     title += str(lr)
@@ -407,7 +409,6 @@ def plot_accuracy(accuracies, lr, bs, stage):
     plt.xlabel('epoch')
     plt.ylabel('accuracy')
     plt.show()
-
 
 # In[25]:
 

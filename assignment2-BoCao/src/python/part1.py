@@ -157,14 +157,15 @@ def train(n_data, lr, bs):
     test_data = np.genfromtxt('../data/assign2_test_data.txt', delimiter=',')
     print "Training starts: len of data:", len(n_data)
 
-    accuracies = []
+    train_accuracies = []
+    test_accuracies = []
     epoch = 0
     n_t = n_data[:, 0]
     n_hu = n_data[:, 1]
     n_lt = n_data[:, 2]
     n_co2 = n_data[:, 3]
     n_hu_r = n_data[:, 4]
-    while epoch <= 50000:
+    while epoch <= 100:
         # train
         i = 0
         for (n_t_i, n_hu_i, n_lt_i, n_co2_i, n_hu_r_i, o_i) in zip(n_t, n_hu, n_lt, n_co2, n_hu_r, o):
@@ -200,13 +201,15 @@ def train(n_data, lr, bs):
                 continue
 
             #test every epoch
-            accuracy = get_one_feedforward_accuracy(n_data, ws, o)
-            accuracies.append(accuracy)
+            train_accuracy = get_one_feedforward_accuracy(n_data, ws, o)
+            train_accuracies.append(train_accuracy)
+            test_accuracy = test(test_data, ws, bs = 1)
+            test_accuracies.append(test_accuracy)
             if epoch % 50 == 0:
                 print "   "
                 print "epoch:", epoch
-                print "train accuracy:\t",accuracy
-                test(test_data, ws, bs = 1)
+                print "train accuracy:\t", train_accuracy
+                print "Test accuracy:\t", test_accuracy
                 print "ws :", ws
 
             i += 1
@@ -216,26 +219,36 @@ def train(n_data, lr, bs):
     print "Training ends."
     print "Initial weights:", init_ws
     print "Trained weights:", ws
-    print "Trained data accuracy:", accuracies[-1]
+    print "Trained data accuracy:", train_accuracies[-1]
 
     # print "test_data:", test_data
-    test(test_data, ws, bs = 1)
+    # test(test_data, ws, bs = 1)
 
-    plot_accuracy(accuracies, lr, bs, stage="train")
+    plot_accuracy(train_accuracies, test_accuracies, lr, bs)
 
 def test(test_data, ws, bs):
     # print "Testing starts: len of data:", len(test_data)
+
+    test_t = test_data[:,2]
+    test_hu = test_data[:,3]
+    test_lt = test_data[:,4]
+    test_co2 = test_data[:,5]
+    test_hu_r = test_data[:,6]
+
+    new_test_data = np.column_stack((test_t, test_hu, test_lt, test_co2, test_hu_r))
+    # print "new_test_data:", new_test_data
+
     #normalize test data
-    #normalize t
-    n_test_data = normalize(test_data)
+    n_test_data = normalize(new_test_data)
+    # print "n_test_data: ", n_test_data
     n_t = n_test_data[:, 0]
     n_hu = n_test_data[:, 1]
     n_lt = n_test_data[:, 2]
     n_co2 = n_test_data[:, 3]
     n_hu_r = n_test_data[:, 4]
     o_test = test_data[:, 7]
-    accuracy = get_one_feedforward_accuracy(n_test_data, ws, o_test)
-    print "Test accuracy:\t",accuracy
+    test_accuracy = get_one_feedforward_accuracy(n_test_data, ws, o_test)
+    return test_accuracy
 
 def get_one_feedforward_accuracy(n_data_t, ws_t, o_t):
 
@@ -258,15 +271,16 @@ def get_one_feedforward_accuracy(n_data_t, ws_t, o_t):
     ##calculate accuracy
     return accuracy
 
-def plot_accuracy(accuracies, lr, bs, stage):
-    accs_y = np.array(accuracies)
+def plot_accuracy(train_accuracies, test_accuracies, lr, bs):
+    train_accs_y = np.array(train_accuracies)
     epochs = []
-    for i in range(len(accuracies)):
+    for i in range(len(train_accuracies)):
         epochs.append(i)
     epochs_x = np.array(epochs)
-    plt.plot(epochs_x, accs_y)
-    title = stage
-    title += ' lr:'
+    plt.plot(epochs_x, train_accs_y, label = "train accuracy")
+    test_accs_y = np.array(test_accuracies)
+    plt.plot(epochs_x, test_accs_y, label = "test accuracy")
+    title = ' lr:'
     title += str(lr)
     title += ' batch_size:'
     title += str(bs)
@@ -280,14 +294,3 @@ def plot_accuracy(accuracies, lr, bs, stage):
 
 
 train(n_data, lr = 0.001, bs = 1)
-
-
-# In[45]:
-
-
-test_data = np.genfromtxt('../data/assign2_test_data.txt', delimiter=',')
-# print "test_data:", test_data
-test(test_data, bs = 1)
-
-
-# In[ ]:
