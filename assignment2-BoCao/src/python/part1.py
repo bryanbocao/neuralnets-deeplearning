@@ -155,6 +155,9 @@ def perceptron(ins, ws):
 
 def train(n_data, lr, bs):
     test_data = np.genfromtxt('../data/assign2_test_data.txt', delimiter=',')
+    o_test = test_data[:, 7]
+    n_test_data = get_normalized_test_data(test_data)
+
     print "Training starts: len of data:", len(n_data)
 
     train_accuracies = []
@@ -165,7 +168,7 @@ def train(n_data, lr, bs):
     n_lt = n_data[:, 2]
     n_co2 = n_data[:, 3]
     n_hu_r = n_data[:, 4]
-    while epoch <= 100:
+    while epoch <= 10000:
         # train
         i = 0
         for (n_t_i, n_hu_i, n_lt_i, n_co2_i, n_hu_r_i, o_i) in zip(n_t, n_hu, n_lt, n_co2, n_hu_r, o):
@@ -203,7 +206,7 @@ def train(n_data, lr, bs):
             #test every epoch
             train_accuracy = get_one_feedforward_accuracy(n_data, ws, o)
             train_accuracies.append(train_accuracy)
-            test_accuracy = test(test_data, ws, bs = 1)
+            test_accuracy = test(n_test_data, ws, o_test)
             test_accuracies.append(test_accuracy)
             if epoch % 50 == 0:
                 print "   "
@@ -226,9 +229,7 @@ def train(n_data, lr, bs):
 
     plot_accuracy(train_accuracies, test_accuracies, lr, bs)
 
-def test(test_data, ws, bs):
-    # print "Testing starts: len of data:", len(test_data)
-
+def get_normalized_test_data(test_data):
     test_t = test_data[:,2]
     test_hu = test_data[:,3]
     test_lt = test_data[:,4]
@@ -239,14 +240,10 @@ def test(test_data, ws, bs):
     # print "new_test_data:", new_test_data
 
     #normalize test data
-    n_test_data = normalize(new_test_data)
-    # print "n_test_data: ", n_test_data
-    n_t = n_test_data[:, 0]
-    n_hu = n_test_data[:, 1]
-    n_lt = n_test_data[:, 2]
-    n_co2 = n_test_data[:, 3]
-    n_hu_r = n_test_data[:, 4]
-    o_test = test_data[:, 7]
+    return normalize(new_test_data)
+
+def test(n_test_data, ws, o_test):
+    # print "Testing starts: len of data:", len(test_data)
     test_accuracy = get_one_feedforward_accuracy(n_test_data, ws, o_test)
     return test_accuracy
 
@@ -277,9 +274,9 @@ def plot_accuracy(train_accuracies, test_accuracies, lr, bs):
     for i in range(len(train_accuracies)):
         epochs.append(i)
     epochs_x = np.array(epochs)
-    plt.plot(epochs_x, train_accs_y, label = "train accuracy")
+    plt.plot(epochs_x, train_accs_y, label = 'train accuracy')
     test_accs_y = np.array(test_accuracies)
-    plt.plot(epochs_x, test_accs_y, label = "test accuracy")
+    plt.plot(epochs_x, test_accs_y, label = 'test accuracy')
     title = ' lr:'
     title += str(lr)
     title += ' batch_size:'
@@ -287,6 +284,7 @@ def plot_accuracy(train_accuracies, test_accuracies, lr, bs):
     plt.title(title)
     plt.xlabel('epoch')
     plt.ylabel('accuracy')
+    plt.legend()
     plt.show()
 
 
