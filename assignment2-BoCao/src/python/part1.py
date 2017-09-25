@@ -4,6 +4,13 @@
 # In[39]:
 
 
+'''
+Author: Bryan Bo Cao
+Email: boca7588@colorado.edu or bo.cao-1@colorado.edu
+Github Repo: https://github.com/BryanBo-Cao/neuralnets-deeplearning
+
+Note that input layer is noted as layer0, hidden layer is noted as layer1, and output layer is noted is layer2
+'''
 import numpy as np
 import random
 import copy
@@ -92,7 +99,7 @@ def normalize(data):
 
     #normalized data: n_data
     n_data = np.column_stack((n_t, n_hu, n_lt, n_co2, n_hu_r))
-    
+
     return n_data
 
 
@@ -103,7 +110,7 @@ n_data = normalize(data)
 print "n_data:", n_data
 
 
-# In[42]:
+# In[46]:
 
 
 def initialize_weights():
@@ -124,7 +131,7 @@ ws = copy.deepcopy(init_ws)
 print "ws: ", ws
 
 
-# In[43]:
+# In[47]:
 
 
 def sigmoid(x):
@@ -145,13 +152,11 @@ def perceptron(ins, ws):
 
 # lr - learning rate
 # bs - batch size
-# set lr and bs
-lr = 0.001
-bs = 1
 
 def train(n_data, lr, bs):
+    test_data = np.genfromtxt('../data/assign2_test_data.txt', delimiter=',')
     print "Training starts: len of data:", len(n_data)
-    
+
     accuracies = []
     epoch = 0
     n_t = n_data[:, 0]
@@ -159,7 +164,7 @@ def train(n_data, lr, bs):
     n_lt = n_data[:, 2]
     n_co2 = n_data[:, 3]
     n_hu_r = n_data[:, 4]
-    while epoch <= 12000:
+    while epoch <= 50000:
         # train
         i = 0
         for (n_t_i, n_hu_i, n_lt_i, n_co2_i, n_hu_r_i, o_i) in zip(n_t, n_hu, n_lt, n_co2, n_hu_r, o):
@@ -169,7 +174,7 @@ def train(n_data, lr, bs):
             sum_error_w_co2 = 0
             sum_error_w_hu_r = 0
             sum_error_b = 0
-            
+
             error = o_i - (n_t_i * ws[0] + n_hu_i * ws[1] + n_lt_i * ws[2] + n_co2_i * ws[3] + n_hu_r_i * ws[4] + ws[5])
             sum_error_w_t += error * n_t_i
             sum_error_w_hu += error * n_hu_i
@@ -177,7 +182,7 @@ def train(n_data, lr, bs):
             sum_error_w_co2 += error * n_co2_i
             sum_error_w_hu_r += error * n_hu_r_i
             sum_error_b += error
-            
+
             if i >= bs: # only update weights after one batch size
                 ws[0] += lr * sum_error_w_t
                 ws[1] += lr * sum_error_w_hu
@@ -193,24 +198,33 @@ def train(n_data, lr, bs):
                 sum_error_b = 0
                 i = 1
                 continue
-            
+
             #test every epoch
             accuracy = get_one_feedforward_accuracy(n_data, ws, o)
             accuracies.append(accuracy)
-            if epoch % 100 == 0:
-                print "epoch:", epoch, " accuracy:",accuracy
-            
+            if epoch % 50 == 0:
+                print "   "
+                print "epoch:", epoch
+                print "train accuracy:\t",accuracy
+                test(test_data, ws, bs = 1)
+                print "ws :", ws
+
             i += 1
-        
-        # count 
+
+        # count
         epoch += 1
     print "Training ends."
     print "Initial weights:", init_ws
     print "Trained weights:", ws
     print "Trained data accuracy:", accuracies[-1]
+
+    # print "test_data:", test_data
+    test(test_data, ws, bs = 1)
+
     plot_accuracy(accuracies, lr, bs, stage="train")
-    
-def test(test_data, o, lr, bs):
+
+def test(test_data, ws, bs):
+    # print "Testing starts: len of data:", len(test_data)
     #normalize test data
     #normalize t
     n_test_data = normalize(test_data)
@@ -219,27 +233,31 @@ def test(test_data, o, lr, bs):
     n_lt = n_test_data[:, 2]
     n_co2 = n_test_data[:, 3]
     n_hu_r = n_test_data[:, 4]
-    accuracy = get_one_feedforward_accuracy(n_data, ws, o)
-    print "Test data accuracy:",accuracy
-        
-def get_one_feedforward_accuracy(n_data, ws, o):
-    
+    o_test = test_data[:, 7]
+    accuracy = get_one_feedforward_accuracy(n_test_data, ws, o_test)
+    print "Test accuracy:\t",accuracy
+
+def get_one_feedforward_accuracy(n_data_t, ws_t, o_t):
+
     #calculate accuracy
     #outputs
-    os = []
-    for each in zip(n_data):
-        for ins in each:
-            os.append(perceptron(ins, ws))
-            
+    os_t = []
+    for each in zip(n_data_t):
+        for ins_t in each: # each sample
+            ins_t = ins_t.tolist()
+            ins_t.append(1)
+            sum_ = np.inner(ins_t, ws_t)
+            os_t.append(activation(sum_))
+
     #count correct output number
     correct_cnt = 0
-    for o_i, os_i in zip(o, os):
-        if (o_i == os_i):
+    for o_t_i, os_t_i in zip(o_t, os_t):
+        if (o_t_i == os_t_i):
             correct_cnt += 1
-    accuracy = float(correct_cnt) / float(len(o))
+    accuracy = float(correct_cnt) / float(len(o_t))
     ##calculate accuracy
     return accuracy
-    
+
 def plot_accuracy(accuracies, lr, bs, stage):
     accs_y = np.array(accuracies)
     epochs = []
@@ -258,10 +276,10 @@ def plot_accuracy(accuracies, lr, bs, stage):
     plt.show()
 
 
-# In[44]:
+# In[48]:
 
 
-train(n_data, lr = 0.0001, bs = 1)
+train(n_data, lr = 0.001, bs = 1)
 
 
 # In[45]:
@@ -269,11 +287,7 @@ train(n_data, lr = 0.0001, bs = 1)
 
 test_data = np.genfromtxt('../data/assign2_test_data.txt', delimiter=',')
 # print "test_data:", test_data
-test(test_data, o, lr, bs)
+test(test_data, bs = 1)
 
 
 # In[ ]:
-
-
-
-
