@@ -226,13 +226,11 @@ def train(n_data, o, lr, H, bs):
 
     delta2 = 0 # delta from the output layer
     delta1 = [] # deltas from hidden layer nodes
-    while epoch <= 10000:
+    while epoch <= 20:
 
         i_data = 0 # index in the traning data list
         i_bs = 0 # index of batch size
         err2 = 0 # output layer error
-
-        
         # one epoch
         while i_data < len(n_t):
 
@@ -297,6 +295,7 @@ def train(n_data, o, lr, H, bs):
                     print "ws1[ii]: before updated\t", ws1[ii]
                     print "delta_ws1[ii]:" , delta_ws1[ii]
                     '''
+
                     ws1[ii] += delta_ws1[ii]
                     #print "ws1[ii]: after updated\t", ws1[ii]
                     #ws1[ii] += 100
@@ -305,12 +304,11 @@ def train(n_data, o, lr, H, bs):
                 ### end of updating ws1
 
                 ### update ws0: weights from input layer to hidden layer
-                # print "delta1 :", delta1
+                delta1 = []
                 ins = train_n_data[i_data] # one input layer
                 # print "ins: ", ins
-                '''
                 for ii in range(len(ins)):
-                    sum_of_delta1_ws0 = 0
+                    sum_of_delta2_ws0 = 0
                     ws0_input_node_i_to_all_hidden_nodes = ws0[:, ii]
                     #print "len(ws0_input_node_i_to_all_hidden_nodes): ", len(ws0_input_node_i_to_all_hidden_nodes)
                     for jj in range(len(ws0_input_node_i_to_all_hidden_nodes)):
@@ -318,15 +316,6 @@ def train(n_data, o, lr, H, bs):
                     deltaii = ins[ii] * (1 - ins[ii]) * sum_of_delta2_ws0
                     # print "deltajj:", deltajj
                     delta1.append(deltaii)
-                '''
-                for ii in range(len(ws0)):
-                    for jj in range(len(ws0[0])):
-                        delta_weight = lr * delta1[ii] * ins[jj]
-                        #print "ws0[ii] :", ws0[ii]
-                        #print "ins[jj] :", ins[jj]
-                        #print "ws0[ii][jj] :", ws0[ii][jj]
-                        #print "delta_weight: ", delta_weight
-                        ws0[ii][jj] += delta_weight
 
                 # print "delta1: ", delta1
                 # print "len(ins):" , len(ins)
@@ -334,7 +323,6 @@ def train(n_data, o, lr, H, bs):
 
                 ## update ws0 specifically
                 # print "ws0 before updated: ", ws0
-                '''
                 for ii in range(len(ws0)): # each row is the list of weights from all inputs layer to one hidden layer
                     for jj in range(len(ws0[0])):
                         delta_w = 0
@@ -345,7 +333,6 @@ def train(n_data, o, lr, H, bs):
                         #    delta_w = lr * delta1[jj]
                         ws0[ii][jj] += delta_w
                         # print "ws0[ii][jj]:", ws0[ii][jj]
-                '''
                 # print "ws0 after  updated: ", ws0
                 # print "     "
                 ## end of updating ws0 specifically
@@ -371,7 +358,6 @@ def train(n_data, o, lr, H, bs):
             print "Test accuracy:\t", test_accuracy
             print "ws0 :", ws0
             print "ws1 :", ws1
-            # print "delta1: ", delta1
             print "delta2: ", delta2
         epoch += 1
 
@@ -473,7 +459,7 @@ def plot_accuracy(train_accuracies, test_accuracies, lr, bs):
 # In[25]:
 
 
-train(n_data, o, lr = 0.0001, H = 3, bs = 1)
+train(n_data, o, lr = 0.01, H = 5, bs = 1)
 
 
 # In[ ]:
