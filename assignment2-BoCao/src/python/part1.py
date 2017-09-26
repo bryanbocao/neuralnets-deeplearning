@@ -168,6 +168,7 @@ def train(n_data, lr, bs):
     n_lt = n_data[:, 2]
     n_co2 = n_data[:, 3]
     n_hu_r = n_data[:, 4]
+    error = 0
     while epoch <= 1000:
         # train
         i = 0
@@ -181,6 +182,7 @@ def train(n_data, lr, bs):
 
             #error = o_i - (n_t_i * ws[0] + n_hu_i * ws[1] + n_lt_i * ws[2] + n_co2_i * ws[3] + n_hu_r_i * ws[4] + ws[5])
             error = o_i - sigmoid(n_t_i * ws[0] + n_hu_i * ws[1] + n_lt_i * ws[2] + n_co2_i * ws[3] + n_hu_r_i * ws[4] + ws[5])
+            #print "error: ", error
             sum_error_w_t += error * n_t_i
             sum_error_w_hu += error * n_hu_i
             sum_error_w_lt += error * n_lt_i
@@ -215,7 +217,7 @@ def train(n_data, lr, bs):
                 print "train accuracy:\t", train_accuracy
                 print "Test accuracy:\t", test_accuracy
                 print "ws :", ws
-
+                print "error: ", error
             i += 1
 
         # count

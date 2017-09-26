@@ -269,9 +269,9 @@ def train(n_data, o, lr, H, bs):
             # Reference: https://www.youtube.com/watch?v=zpykfC4VnpM, https://page.mi.fu-berlin.de/rojas/neural/chapter/K7.pdf
             # d_err2_ws1 = -(net_o - o[i_data]) * sigmoidPrime(net_o) * hidden_os
 
-            delta2 = net_o * (1 - net_o) * (net_o - o[i_data])# output layers delta
+            #delta2 = net_o * (1 - net_o) * (net_o - o[i_data])# output layers delta
             #delta2 = net_o * (1 - net_o) * (o[i_data] - net_o)
-            #delta2 = o[i_data] - net_o
+            delta2 = o[i_data] - net_o
             #print "delta2: ", delta2
             #print "net_o:", net_o, " o[i_data]: ", o[i_data]
             # print "net_o - o[i_data]: ", net_o - o[i_data]
@@ -280,22 +280,21 @@ def train(n_data, o, lr, H, bs):
             #print "delta2:", delta2
             # print "hidden_os: ", hidden_os
 
-            # Reference: https://page.mi.fu-berlin.de/rojas/neural/chapter/K7.pdf
-
-
             delta_ws1_t = []
             for i_hidden_node in range(H):
                 # print "hidden_os[i_hidden_node]:", hidden_os[i_hidden_node]
-                delta1.append(hidden_os[i_hidden_node] * (1 - hidden_os[i_hidden_node]) * delta2 * ws1[i_hidden_node])
+                #delta1.append(hidden_os[i_hidden_node] * (1 - hidden_os[i_hidden_node]) * delta2 * ws1[i_hidden_node])
+                delta1.append(delta2 * ws1[i_hidden_node])
                 #print "delta1: ", delta1
-                delta_ws1_t.append(-lr * delta2 * hidden_os[i_hidden_node])
-                #delta_ws1_t.append(lr * delta2 * hidden_os[i_hidden_node])
+                #delta_ws1_t.append(-lr * delta2 * hidden_os[i_hidden_node])
+                delta_ws1_t.append(lr * delta2 * hidden_os[i_hidden_node])
 
             # append bias delta
             #delta_b1 = -lr * delta2
             #delta_b1 = lr * delta2
             #delta_ws1.append(delta_b1)
-            #print "delta_ws1: ", delta_ws1
+            # print "delta_ws1: ", delta_ws1
+
 
             for ii in range(len(delta_ws1)):
                 delta_ws1[ii] += delta_ws1_t[ii]
@@ -310,8 +309,8 @@ def train(n_data, o, lr, H, bs):
             for ii in range(len(ws0)):
                 delta_ws0_tt = []
                 for jj in range(len(ws0[0])):
-                    delta_weight = -lr * delta1[ii] * ins[jj]
-                    #delta_weight = lr * delta1[ii] * ins[jj]
+                    #delta_weight = -lr * delta1[ii] * ins[jj]
+                    delta_weight = lr * delta1[ii] * ins[jj]
                     delta_ws0_tt.append(delta_weight)
                     #print "ws0[ii] :", ws0[ii]
                     #print "ins[jj] :", ins[jj]
@@ -478,7 +477,7 @@ def plot_accuracy(train_accuracies, test_accuracies, lr, bs):
 # In[25]:
 
 
-train(n_data, o, lr = 0.01, H = 1, bs = 100)
+train(n_data, o, lr = 0.01, H = 3, bs = 1000)
 
 
 # In[ ]:

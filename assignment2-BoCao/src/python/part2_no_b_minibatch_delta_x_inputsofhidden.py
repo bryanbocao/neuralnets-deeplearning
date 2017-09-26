@@ -242,21 +242,21 @@ def train(n_data, o, lr, H, bs):
         while i_data < len(train_data):
 
             # each hidden neuron
-            hidden_os = [] # hidden layer outputs
+            hidden_ins = [] # hidden layer outputs
             #print "train_n_data[i_data]: ", train_n_data[i_data]
             for i in range(H):
                 #print "i_data:",i_data
                 #print "train_n_data[i_data]: ", train_n_data[i_data]
-                hidden_o_i = sigmoid(np.inner(ws0[i], train_n_data[i_data])) # one output of one hidden layer neuron
+                #hidden_o_i = sigmoid(np.inner(ws0[i], train_n_data[i_data])) # one output of one hidden layer neuron
                 #hidden_o_i = activation(np.inner(ws0[i], train_n_data[i_data])) # one output of one hidden layer neuron
-                #hidden_o_i = np.inner(ws0[i], train_n_data[i_data]) # one output of one hidden layer neuron
+                hidden_o_i = np.inner(ws0[i], train_n_data[i_data]) # one output of one hidden layer neuron
 
-                hidden_os.append(hidden_o_i)
+                hidden_ins.append(hidden_o_i)
 
-            #hidden_os.append(1) # append bias
-            #print "hidden_os:", hidden_os
+            #hidden_ins.append(1) # append bias
+            #print "hidden_ins:", hidden_ins
 
-            sum_to_output_layer = np.inner(hidden_os, ws1) # output layer output
+            sum_to_output_layer = np.inner(hidden_ins, ws1) # output layer output
             net_o = sigmoid(sum_to_output_layer)
             #net_o = activation(sum_to_output_layer)
 
@@ -267,29 +267,29 @@ def train(n_data, o, lr, H, bs):
             ### update ws1: weights from hidden layer to output layer
             # Derivative of err2 with respect to ws1
             # Reference: https://www.youtube.com/watch?v=zpykfC4VnpM, https://page.mi.fu-berlin.de/rojas/neural/chapter/K7.pdf
-            # d_err2_ws1 = -(net_o - o[i_data]) * sigmoidPrime(net_o) * hidden_os
+            # d_err2_ws1 = -(net_o - o[i_data]) * sigmoidPrime(net_o) * hidden_ins
 
             delta2 = net_o * (1 - net_o) * (net_o - o[i_data])# output layers delta
             #delta2 = net_o * (1 - net_o) * (o[i_data] - net_o)
             #delta2 = o[i_data] - net_o
             #print "delta2: ", delta2
-            #print "net_o:", net_o, " o[i_data]: ", o[i_data]
+            #print "net_o:", net_o, " o[i_data]: ", o[i_data], "i_data: ", i_data
             # print "net_o - o[i_data]: ", net_o - o[i_data]
 
-            #ws1 += ws1 + lr * err2 * hidden_os
+            #ws1 += ws1 + lr * err2 * hidden_ins
             #print "delta2:", delta2
-            # print "hidden_os: ", hidden_os
+            # print "hidden_ins: ", hidden_ins
 
             # Reference: https://page.mi.fu-berlin.de/rojas/neural/chapter/K7.pdf
 
 
             delta_ws1_t = []
             for i_hidden_node in range(H):
-                # print "hidden_os[i_hidden_node]:", hidden_os[i_hidden_node]
-                delta1.append(hidden_os[i_hidden_node] * (1 - hidden_os[i_hidden_node]) * delta2 * ws1[i_hidden_node])
+                # print "hidden_ins[i_hidden_node]:", hidden_ins[i_hidden_node]
+                delta1.append(hidden_ins[i_hidden_node] * (1 - hidden_ins[i_hidden_node]) * delta2 * ws1[i_hidden_node])
                 #print "delta1: ", delta1
-                delta_ws1_t.append(-lr * delta2 * hidden_os[i_hidden_node])
-                #delta_ws1_t.append(lr * delta2 * hidden_os[i_hidden_node])
+                delta_ws1_t.append(-lr * delta2 * hidden_ins[i_hidden_node])
+                #delta_ws1_t.append(lr * delta2 * hidden_ins[i_hidden_node])
 
             # append bias delta
             #delta_b1 = -lr * delta2
@@ -298,6 +298,8 @@ def train(n_data, o, lr, H, bs):
             #print "delta_ws1: ", delta_ws1
 
             for ii in range(len(delta_ws1)):
+                #if (o[i_data] == 1.0):
+                print "net_o:", net_o, " o[i_data]: ", o[i_data], "i_data: ", i_data, " ws1[ii]: ", ws1[ii], "delta_ws1[ii]: ", delta_ws1[ii]
                 delta_ws1[ii] += delta_ws1_t[ii]
             #print "delta_ws1" , delta_ws1
 
@@ -322,6 +324,8 @@ def train(n_data, o, lr, H, bs):
             for ii in range(len(delta_ws0)):
                 for jj in range(len(delta_ws0[0])):
                     delta_ws0[ii][jj] += delta_ws0_t[ii][jj]
+                    #if (o[i_data] == 1.0):
+                    #    print "net_o:", net_o, " o[i_data]: ", o[i_data], "i_data: ", i_data, " ws1[ii]: ", ws1[ii], "delta_ws1[ii]: ", delta_ws1[ii]
             #print "delta_ws0:", delta_ws0
 
             # only update weights after bs batch_size
@@ -360,7 +364,7 @@ def train(n_data, o, lr, H, bs):
                 delta_ws1 = np.zeros(H)
                 i_bs = -1
 
-            hidden_os = []
+            hidden_ins = []
             i_data += 1
             i_bs += 1
 
@@ -423,7 +427,7 @@ def get_one_feedforward_accuracy(n_data, H, ws0, ws1, o_t):
             ins = ins.tolist()
             #if (len(ins) < len(ws0[0])):
             #    ins.append(1)
-            hidden_os = [] # hidden layer outputs
+            hidden_ins = [] # hidden layer outputs
             for i_hidden in range(H):
                 #print "ins: ", ins
                 #print "ws0[i_hidden]: ", ws0[i_hidden]
@@ -435,10 +439,10 @@ def get_one_feedforward_accuracy(n_data, H, ws0, ws1, o_t):
                 print "sum_input: ", sum_input
                 '''
                 output = sigmoid(sum_input)
-                hidden_os.append(output)
-            #hidden_os.append(1)
-            # print "hidden_os: ", hidden_os
-            sum_input_to_output_layer = np.inner(hidden_os, ws1)
+                hidden_ins.append(output)
+            #hidden_ins.append(1)
+            # print "hidden_ins: ", hidden_ins
+            sum_input_to_output_layer = np.inner(hidden_ins, ws1)
             # print "sum_input_to_output_layer: ", sum_input_to_output_layer
             output = perceptron(sum_input_to_output_layer) # predict output of the whole neural network
             # print "output:", output
@@ -478,7 +482,7 @@ def plot_accuracy(train_accuracies, test_accuracies, lr, bs):
 # In[25]:
 
 
-train(n_data, o, lr = 0.01, H = 1, bs = 100)
+train(n_data, o, lr = 0.01, H = 1, bs = 1)
 
 
 # In[ ]:

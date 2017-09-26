@@ -280,9 +280,6 @@ def train(n_data, o, lr, H, bs):
             #print "delta2:", delta2
             # print "hidden_os: ", hidden_os
 
-            # Reference: https://page.mi.fu-berlin.de/rojas/neural/chapter/K7.pdf
-
-
             delta_ws1_t = []
             for i_hidden_node in range(H):
                 # print "hidden_os[i_hidden_node]:", hidden_os[i_hidden_node]
@@ -295,7 +292,8 @@ def train(n_data, o, lr, H, bs):
             #delta_b1 = -lr * delta2
             #delta_b1 = lr * delta2
             #delta_ws1.append(delta_b1)
-            #print "delta_ws1: ", delta_ws1
+            # print "delta_ws1: ", delta_ws1
+
 
             for ii in range(len(delta_ws1)):
                 delta_ws1[ii] += delta_ws1_t[ii]
@@ -478,7 +476,7 @@ def plot_accuracy(train_accuracies, test_accuracies, lr, bs):
 # In[25]:
 
 
-train(n_data, o, lr = 0.01, H = 1, bs = 100)
+train(n_data, o, lr = 0.0001, H = 3, bs = 1000)
 
 
 # In[ ]:
