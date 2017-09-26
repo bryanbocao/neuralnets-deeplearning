@@ -356,6 +356,7 @@ def train(n_data, o, lr, H, bs):
                 ### end of updating ws0
 
                 delta_ws0 = np.zeros((H, 5))
+                #print "line 359 delta_ws0: ", delta_ws0, " i_bs: ", i_bs
                 delta_ws1 = np.zeros(H)
                 i_bs = -1
 

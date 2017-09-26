@@ -27,6 +27,11 @@ hu_r = train_data[:,6]
 
 o = train_data[:,7]
 
+# scale o outputs to [-1, 1]
+for ii in range(len(o)):
+    if (o[ii] == 0):
+        o[ii] = -1
+
 #data
 data = np.column_stack((t, hu, lt, co2, hu_r))
 #print "data:", data
@@ -170,7 +175,7 @@ def activation(x): # use sigmoid as activation function
     if a >= 0.5:
         return 1
     else:
-        return 0
+        return -1
 
 def perceptron(sum_of_inputs):
     return activation(sum_of_inputs)
@@ -187,6 +192,11 @@ def error_function(o, y):
 def train(n_data, o, lr, H, bs):
     test_data = np.genfromtxt('../data/assign2_test_data.txt', delimiter=',')
     o_test = test_data[:, 7]
+
+    # change o_test value to [-1, 1]
+    for ii in range(len(o_test)):
+        if (o_test[ii] == 0):
+            o_test[ii] = -1
     n_test_data = get_normalized_test_data(test_data)
     print "n_test_data: ", n_test_data
 
@@ -233,8 +243,7 @@ def train(n_data, o, lr, H, bs):
         i_data = 0 # index in the traning data list
         i_bs = 0 # index of batch size
         #err2 = 0 # output layer error
-        delta2 = 0
-        delta1 = []
+
 
         #print "delta_ws0", delta_ws0
         #print "delta_ws1", delta_ws1
@@ -258,8 +267,8 @@ def train(n_data, o, lr, H, bs):
             #print "hidden_os:", hidden_os
 
             sum_to_output_layer = np.inner(hidden_os, ws1) # output layer output
-            net_o = sigmoid(sum_to_output_layer)
-            #net_o = activation(sum_to_output_layer)
+            #net_o = sigmoid(sum_to_output_layer)
+            net_o = activation(sum_to_output_layer)
 
             # err2 += error_function(net_o, o[i_data]) # output layer error
             # print "err2: ", err2
@@ -285,7 +294,6 @@ def train(n_data, o, lr, H, bs):
 
 
             delta_ws1_t = []
-            delta1 = []
             for i_hidden_node in range(H):
                 # print "hidden_os[i_hidden_node]:", hidden_os[i_hidden_node]
                 delta1.append(hidden_os[i_hidden_node] * (1 - hidden_os[i_hidden_node]) * delta2 * ws1[i_hidden_node])
@@ -311,8 +319,6 @@ def train(n_data, o, lr, H, bs):
             delta_ws0_t = []
             for ii in range(len(ws0)):
                 delta_ws0_tt = []
-                #print "line 312: ws0[0]: ", ws0[0],
-                #print " delta1: ", delta1
                 for jj in range(len(ws0[0])):
                     delta_weight = -lr * delta1[ii] * ins[jj]
                     #delta_weight = lr * delta1[ii] * ins[jj]
@@ -363,7 +369,6 @@ def train(n_data, o, lr, H, bs):
                 delta_ws0 = np.zeros((H, 5))
                 delta_ws1 = np.zeros(H)
                 i_bs = -1
-
 
             hidden_os = []
             i_data += 1
@@ -483,7 +488,7 @@ def plot_accuracy(train_accuracies, test_accuracies, lr, bs):
 # In[25]:
 
 
-train(n_data, o, lr = 0.01, H = 2, bs = 100)
+train(n_data, o, lr = 0.01, H = 1, bs = 100)
 
 
 # In[ ]:
