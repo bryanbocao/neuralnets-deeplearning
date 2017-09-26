@@ -1,4 +1,4 @@
-
+# Reference:
 # coding: utf-8
 
 # In[3]:
@@ -29,18 +29,18 @@ o = train_data[:,7]
 
 #data
 data = np.column_stack((t, hu, lt, co2, hu_r))
-print "data:", data
+#print "data:", data
 
-print "np.shape(train_data): ", np.shape(train_data)
+#print "np.shape(train_data): ", np.shape(train_data)
 #print "np.shape(t): ", np.shape(t)
-
+'''
 print "t: ", t
 print "hu: ", hu
 print "lt: ", lt
 print "co2: ", co2
 print "hu_r: ", hu_r
 print "o: ", o
-
+'''
 
 # In[4]:
 
@@ -119,16 +119,16 @@ def initialize_weights1():
     w_lt = random.random()
     w_co2 = random.random()
     w_hu_r = random.random()
-    b = random.random()
+    # b = random.random()
 
     #weights
-    ws1 = [w_t, w_hu, w_lt, w_co2, w_hu_r, b]
+    #ws1 = [w_t, w_hu, w_lt, w_co2, w_hu_r, b]
+    ws1 = [w_t, w_hu, w_lt, w_co2, w_hu_r]
     return ws1
 
 init_ws1 = initialize_weights1()
 ws1 = copy.deepcopy(init_ws1)
 print "ws1: ", ws1
-
 
 # In[7]:
 
@@ -136,8 +136,10 @@ print "ws1: ", ws1
 # initialize random weights from layer with i neurons to layer with j neurons -- fully connected layer including bias
 # note that each row is the weights list from former layer to jth neuron in the latter layer
 def initialize_weights(i, j):
-    ws = np.random.rand(j, i + 1)
+    #ws = np.random.rand(j, i + 1)
+    ws = np.random.rand(j, i)
     return ws
+    #return np.dot(ws, 5)
 
 
 # In[8]:
@@ -186,6 +188,7 @@ def train(n_data, o, lr, H, bs):
     test_data = np.genfromtxt('../data/assign2_test_data.txt', delimiter=',')
     o_test = test_data[:, 7]
     n_test_data = get_normalized_test_data(test_data)
+    print "n_test_data: ", n_test_data
 
     print "Training starts: len of data:", len(n_data)
 
@@ -197,13 +200,14 @@ def train(n_data, o, lr, H, bs):
     n_lt = n_data[:, 2]
     n_co2 = n_data[:, 3]
     n_hu_r = n_data[:, 4]
-    n_b = np.ones(len(n_t))
+    #n_b = np.ones(len(n_t))
 
-    train_n_data = np.column_stack((n_t, n_hu, n_lt, n_co2, n_hu_r, n_b))
+    #train_n_data = np.column_stack((n_t, n_hu, n_lt, n_co2, n_hu_r, n_b))
+    train_n_data = np.column_stack((n_t, n_hu, n_lt, n_co2, n_hu_r))
     print "n_t:", n_t
     print "n_hu:", n_hu
     print "n_lt:", n_lt
-    print "n_b:", n_b
+    #print "n_b:", n_b
     print "train_n_data:", train_n_data
 
     #ws0 are the weights from input layer to hidden layer
@@ -221,101 +225,145 @@ def train(n_data, o, lr, H, bs):
 
     delta2 = 0 # delta from the output layer
     delta1 = [] # deltas from hidden layer nodes
-    while epoch <= 50000:
+
+    delta_ws0 = np.zeros((H, 5))
+    delta_ws1 = np.zeros(H)
+    while epoch <= 1000:
 
         i_data = 0 # index in the traning data list
         i_bs = 0 # index of batch size
-        err2 = 0 # output layer error
+        #err2 = 0 # output layer error
+        delta2 = 0
+        delta1 = []
+
+        #print "delta_ws0", delta_ws0
+        #print "delta_ws1", delta_ws1
         # one epoch
-        while i_data < len(n_t):
+        #print "len(train_data)", len(train_data)
+        while i_data < len(train_data):
 
             # each hidden neuron
             hidden_os = [] # hidden layer outputs
+            #print "train_n_data[i_data]: ", train_n_data[i_data]
             for i in range(H):
                 #print "i_data:",i_data
+                #print "train_n_data[i_data]: ", train_n_data[i_data]
                 hidden_o_i = sigmoid(np.inner(ws0[i], train_n_data[i_data])) # one output of one hidden layer neuron
+                #hidden_o_i = activation(np.inner(ws0[i], train_n_data[i_data])) # one output of one hidden layer neuron
+                #hidden_o_i = np.inner(ws0[i], train_n_data[i_data]) # one output of one hidden layer neuron
+
                 hidden_os.append(hidden_o_i)
 
-            hidden_os.append(1) # append bias
+            #hidden_os.append(1) # append bias
             #print "hidden_os:", hidden_os
 
             sum_to_output_layer = np.inner(hidden_os, ws1) # output layer output
             net_o = sigmoid(sum_to_output_layer)
-            # print "net_o:", net_o
+            #net_o = activation(sum_to_output_layer)
 
-            err2 += error_function(net_o, o[i_data]) # output layer error
+            # err2 += error_function(net_o, o[i_data]) # output layer error
             # print "err2: ", err2
+
+
+            ### update ws1: weights from hidden layer to output layer
+            # Derivative of err2 with respect to ws1
+            # Reference: https://www.youtube.com/watch?v=zpykfC4VnpM, https://page.mi.fu-berlin.de/rojas/neural/chapter/K7.pdf
+            # d_err2_ws1 = -(net_o - o[i_data]) * sigmoidPrime(net_o) * hidden_os
+
+            delta2 = net_o * (1 - net_o) * (net_o - o[i_data])# output layers delta
+            #delta2 = net_o * (1 - net_o) * (o[i_data] - net_o)
+            #delta2 = o[i_data] - net_o
+            #print "delta2: ", delta2
+            #print "net_o:", net_o, " o[i_data]: ", o[i_data]
+            # print "net_o - o[i_data]: ", net_o - o[i_data]
+
+            #ws1 += ws1 + lr * err2 * hidden_os
+            #print "delta2:", delta2
+            # print "hidden_os: ", hidden_os
+
+            # Reference: https://page.mi.fu-berlin.de/rojas/neural/chapter/K7.pdf
+
+
+            delta_ws1_t = []
+            delta1 = []
+            for i_hidden_node in range(H):
+                # print "hidden_os[i_hidden_node]:", hidden_os[i_hidden_node]
+                delta1.append(hidden_os[i_hidden_node] * (1 - hidden_os[i_hidden_node]) * delta2 * ws1[i_hidden_node])
+                #print "delta1: ", delta1
+                delta_ws1_t.append(-lr * delta2 * hidden_os[i_hidden_node])
+                #delta_ws1_t.append(lr * delta2 * hidden_os[i_hidden_node])
+
+            # append bias delta
+            #delta_b1 = -lr * delta2
+            #delta_b1 = lr * delta2
+            #delta_ws1.append(delta_b1)
+            #print "delta_ws1: ", delta_ws1
+
+            for ii in range(len(delta_ws1)):
+                delta_ws1[ii] += delta_ws1_t[ii]
+            #print "delta_ws1" , delta_ws1
+
+            ### update ws0: weights from input layer to hidden layer
+            # print "delta1 :", delta1
+            ins = train_n_data[i_data] # one input layer
+            # print "ins: ", ins
+
+            delta_ws0_t = []
+            for ii in range(len(ws0)):
+                delta_ws0_tt = []
+                #print "line 312: ws0[0]: ", ws0[0],
+                #print " delta1: ", delta1
+                for jj in range(len(ws0[0])):
+                    delta_weight = -lr * delta1[ii] * ins[jj]
+                    #delta_weight = lr * delta1[ii] * ins[jj]
+                    delta_ws0_tt.append(delta_weight)
+                    #print "ws0[ii] :", ws0[ii]
+                    #print "ins[jj] :", ins[jj]
+                    #print "ws0[ii][jj] :", ws0[ii][jj]
+                    #print "delta_weight: ", delta_weight
+                delta_ws0_t.append(delta_ws0_tt)
+
+            for ii in range(len(delta_ws0)):
+                for jj in range(len(delta_ws0[0])):
+                    delta_ws0[ii][jj] += delta_ws0_t[ii][jj]
+            #print "delta_ws0:", delta_ws0
 
             # only update weights after bs batch_size
             # print "o:",o
             if i_bs >= bs:
-                ### update ws1: weights from hidden layer to output layer
-                # Derivative of err2 with respect to ws1
-                # Reference: https://www.youtube.com/watch?v=zpykfC4VnpM, https://page.mi.fu-berlin.de/rojas/neural/chapter/K7.pdf
-                # d_err2_ws1 = -(net_o - o[i_data]) * sigmoidPrime(net_o) * hidden_os
-                delta2 = net_o * (1 - net_o) * (net_o - o[i_data])# output layers delta
-                #ws1 += ws1 + lr * err2 * hidden_os
-                # print "delta2:", delta2
-
-                delta_ws1 = []
-                for i_hidden_node in range(H):
-                    # print "hidden_os[i_hidden_node]:", hidden_os[i_hidden_node]
-                    delta1.append(hidden_os[i_hidden_node] *
-                                  (1 - hidden_os[i_hidden_node]) *
-                                  delta2 *
-                                  ws1[i_hidden_node])
-                    #print "delta1: ", delta1
-
-                    delta_ws1.append(-lr * delta2 * hidden_os[i_hidden_node])
-
-                # append bias delta
-                delta_b1 = lr * delta2
-                delta_ws1.append(delta_b1)
-                # print "delta_ws1: ", delta_ws1
-
                 # print "ws1 before updated: ", ws1
                 # print "delta_ws1: ", delta_ws1
                 # update ws1 - weights from hidden layer to output layer
+
+                #delta_ws0 = np.dot(delta_ws0, 1 / bs)
+                #delta_ws1 = np.dot(delta_ws1, 1 / bs)
+
                 for ii in range(len(ws1)):
-                    # print "ws1[ii]: ", ws1[ii]
-                    # print "delta_ws1[ii]:" , delta_ws1[ii]
+                    '''
+                    print "    "
+                    print "ws1: \t:", ws1
+                    print "ws1[ii]: before updated\t", ws1[ii]
+                    print "delta_ws1[ii]:" , delta_ws1[ii]
+                    '''
                     ws1[ii] += delta_ws1[ii]
+                    #print "ws1[ii]: after updated\t", ws1[ii]
                     #ws1[ii] += 100
-                # print "ws1 after  updated: ", ws1
-                # print "   "
+                #print "ws1 after  updated: ", ws1
+                #print "   "
                 ### end of updating ws1
 
-                ### update ws0: weights from input layer to hidden layer
-                delta1 = []
-                ins = train_n_data[i_data] # one input layer
-                # print "ins: ", ins
-                for ii in range(len(ins)):
-                    sum_of_delta2_ws0 = 0
-                    ws0_input_node_i_to_all_hidden_nodes = ws0[:, ii]
-                    for jj in range(len(ws0_input_node_i_to_all_hidden_nodes)):
-                        sum_of_delta2_ws0 += delta2 * ws0_input_node_i_to_all_hidden_nodes[jj]
-                    deltaii = ins[ii] * (1 - ins[ii]) * sum_of_delta2_ws0
-                    # print "deltajj:", deltajj
-                    delta1.append(deltaii)
-
-                # print "delta1: ", delta1
-                # print "len(ins):" , len(ins)
-                # print "len(delta1):", len(delta1)
-
-                ## update ws0 specifically
-                # print "ws0 before updated: ", ws0
-                for ii in range(len(ws0)): # each row is the list of weights from all inputs layer to one hidden layer
+                ### update ws0
+                #print "delta_ws1", delta_ws1, "i_data: ", i_data, " i_bs: ", i_bs
+                #print "delta_ws0", delta_ws0, "i_data: ", i_data, " i_bs: ", i_bs
+                for ii in range(len(ws0)):
                     for jj in range(len(ws0[0])):
-                        delta_w = -lr * delta1[jj] * ins[jj]
-                        ws0[ii][jj] += delta_w
-                # print "ws0 after  updated: ", ws0
-                # print "     "
-                ## end of updating ws0 specifically
+                        ws0[ii][jj] += delta_ws0[ii][jj]
                 ### end of updating ws0
 
-                delta2 = 0
-                err2 = 0
+                delta_ws0 = np.zeros((H, 5))
+                delta_ws1 = np.zeros(H)
                 i_bs = -1
+
 
             hidden_os = []
             i_data += 1
@@ -329,11 +377,12 @@ def train(n_data, o, lr, H, bs):
         if epoch % 1 == 0:
             print "   "
             print "epoch:", epoch
-            print "train accuracy:\t", train_accuracy
+            print "Train accuracy:\t", train_accuracy
             print "Test accuracy:\t", test_accuracy
             print "ws0 :", ws0
             print "ws1 :", ws1
-
+            # print "delta1: ", delta1
+            print "delta2: ", delta2
         epoch += 1
 
     print "Training ends."
@@ -341,10 +390,10 @@ def train(n_data, o, lr, H, bs):
     print "Trained input to hidden layer weights:", ws0
     print "Initial hidden to output layer weights:", init_ws1
     print "Trained hidden to output layer weights:", ws1
-    test_data = np.genfromtxt('../data/assign2_test_data.txt', delimiter=',')
+    # test_data = np.genfromtxt('../data/assign2_test_data.txt', delimiter=',')
     # print "test_data:", test_data
-    test(test_data, H, ws0, ws1, o_test)
-    plot_accuracy(train_accuracies, test_accuracieslr, bs)
+    # test(test_data, H, ws0, ws1, o_test)
+    plot_accuracy(train_accuracies, test_accuracies, lr, bs)
 
 def get_normalized_test_data(test_data):
     test_t = test_data[:,2]
@@ -377,17 +426,22 @@ def get_one_feedforward_accuracy(n_data, H, ws0, ws1, o_t):
         for ins in each: # each sample
             # print "ins: ", ins
             ins = ins.tolist()
-            if (len(ins) < len(ws0[0])):
-                ins.append(1)
+            #if (len(ins) < len(ws0[0])):
+            #    ins.append(1)
             hidden_os = [] # hidden layer outputs
             for i_hidden in range(H):
-                # print "ins: ", ins
-                # print "ws0[i_hidden]: ", ws0[i_hidden]
+                #print "ins: ", ins
+                #print "ws0[i_hidden]: ", ws0[i_hidden]
                 # ws0[i_hidden] = ws0[i_hidden].tolist()
                 sum_input = np.inner(ins, ws0[i_hidden])
+                '''
+                print "ins: ", ins
+                print "ws0[i_hidden]: ", ws0[i_hidden]
+                print "sum_input: ", sum_input
+                '''
                 output = sigmoid(sum_input)
                 hidden_os.append(output)
-            hidden_os.append(1)
+            #hidden_os.append(1)
             # print "hidden_os: ", hidden_os
             sum_input_to_output_layer = np.inner(hidden_os, ws1)
             # print "sum_input_to_output_layer: ", sum_input_to_output_layer
@@ -429,7 +483,7 @@ def plot_accuracy(train_accuracies, test_accuracies, lr, bs):
 # In[25]:
 
 
-train(n_data, o, lr = 0.1, H = 2, bs = 1)
+train(n_data, o, lr = 0.005, H = 5, bs = 100)
 
 
 # In[ ]:
