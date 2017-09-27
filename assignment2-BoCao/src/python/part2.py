@@ -195,6 +195,17 @@ def train(n_data, o, lr, H, bs):
     for ii in range(4):
         bottom_lines.append([])
 
+    highest_train_accuracy = 0
+    train_accuracy_when_highest_train_accuracy = 0
+    test_accuracy_when_highest_train_accuracy = 0
+    epoch_when_highest_train_accuracy = 0
+    ws0_when_highest_train_accuracy = []
+    highest_test_accuracy = 0
+    train_accuracy_when_highest_test_accuracy = 0
+    test_accuracy_when_highest_test_accuracy = 0
+    epoch_when_highest_test_accuracy = 0
+    ws1_when_highest_train_accuracy = []
+
     #print "bottom_lines: ", bottom_lines
 
     test_data = np.genfromtxt('../data/assign2_test_data.txt', delimiter=',')
@@ -240,7 +251,7 @@ def train(n_data, o, lr, H, bs):
 
     delta_ws0 = np.zeros((H, 5))
     delta_ws1 = np.zeros(H)
-    while epoch <= 100:
+    while epoch <= 1000:
 
         i_data = 0 # index in the traning data list
         i_bs = 0 # index of batch size
@@ -393,13 +404,30 @@ def train(n_data, o, lr, H, bs):
         train_accuracies.append(train_accuracy)
         test_accuracy = test(n_test_data, H, ws0, ws1, o_test)
         test_accuracies.append(test_accuracy)
+
+        if (train_accuracy > highest_train_accuracy):
+            highest_train_accuracy = train_accuracy
+            train_accuracy_when_highest_train_accuracy = train_accuracy
+            test_accuracy_when_highest_train_accuracy = test_accuracy
+            epoch_when_highest_train_accuracy = epoch
+            ws0_when_highest_train_accuracy = copy.deepcopy(ws0)
+            ws1_when_highest_train_accuracy = copy.deepcopy(ws1)
+
+        if (test_accuracy > highest_test_accuracy):
+            highest_test_accuracy = test_accuracy
+            train_accuracy_when_highest_test_accuracy = train_accuracy
+            test_accuracy_when_highest_test_accuracy = test_accuracy
+            epoch_when_highest_test_accuracy = epoch
+            ws0_when_highest_test_accuracy = copy.deepcopy(ws0)
+            ws1_when_highest_test_accuracy = copy.deepcopy(ws1)
+
         if epoch % 1 == 0:
             print "   "
-            print "epoch:", epoch, " lr: ", lr, " H: ", H, " delta2: ", delta2
+            print "epoch:", epoch, " lr:", lr, " H:", H, " delta2:", delta2
             print "Train accuracy:\t", train_accuracy
             print "Test accuracy:\t", test_accuracy
-            print "ws0 :", ws0
-            print "ws1 :", ws1
+            print "ws0:", ws0
+            print "ws1:", ws1
             # print "delta1: ", delta1
 
         epoch += 1
@@ -409,6 +437,19 @@ def train(n_data, o, lr, H, bs):
     print "Trained input to hidden layer weights:", ws0
     print "Initial hidden to output layer weights:", init_ws1
     print "Trained hidden to output layer weights:", ws1
+
+    print "Epoch_when_highest_train_accuracy:", epoch_when_highest_train_accuracy
+    print "Train_accuracy_when_highest_train_accuracy:", train_accuracy_when_highest_train_accuracy
+    print "Test_accuracy_when_highest_train_accuracy:", test_accuracy_when_highest_train_accuracy
+    print "ws0_when_highest_train_accuracy:", ws0_when_highest_train_accuracy
+    print "ws1_when_highest_train_accuracy:", ws1_when_highest_train_accuracy
+
+    print "Epoch_when_highest_test_accuracy:", epoch_when_highest_test_accuracy
+    print "Train_accuracy_when_highest_test_accuracy:", train_accuracy_when_highest_test_accuracy
+    print "Test_accuracy_when_highest_test_accuracy:", test_accuracy_when_highest_test_accuracy
+    print "ws0_when_highest_test_accuracy:", ws0_when_highest_test_accuracy
+    print "ws1_when_highest_test_accuracy:", ws1_when_highest_test_accuracy
+
     # test_data = np.genfromtxt('../data/assign2_test_data.txt', delimiter=',')
     # print "test_data:", test_data
     # test(test_data, H, ws0, ws1, o_test)
@@ -496,11 +537,11 @@ def plot_accuracy(train_accuracies, test_accuracies, bottom_lines, lr, bs):
     test_all_output_0_accuracy_y = bottom_lines[1]
     plt.plot(epochs_x, test_all_output_0_accuracy_y, label = 'test_all_output_0_accuracy')
 
-    train_all_output_1_accuracy_y = bottom_lines[2]
-    plt.plot(epochs_x, train_all_output_1_accuracy_y, label = 'train_all_output_1_accuracy')
+    #train_all_output_1_accuracy_y = bottom_lines[2]
+    #plt.plot(epochs_x, train_all_output_1_accuracy_y, label = 'train_all_output_1_accuracy')
 
-    test_all_output_1_accuracy_y = bottom_lines[3]
-    plt.plot(epochs_x, test_all_output_1_accuracy_y, label = 'test_all_output_1_accuracy')
+    #test_all_output_1_accuracy_y = bottom_lines[3]
+    #plt.plot(epochs_x, test_all_output_1_accuracy_y, label = 'test_all_output_1_accuracy')
 
 
     title = ' lr:'
