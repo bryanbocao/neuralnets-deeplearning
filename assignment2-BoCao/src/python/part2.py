@@ -16,6 +16,11 @@ import random
 import copy
 import matplotlib.pyplot as plt
 
+train_all_output_0_accuracy = 0.787670391748
+test_all_output_0_accuracy = 0.789889253486
+train_all_output_1_accuracy = 0.212329608252
+test_all_output_1_accuracy = 0.210110746514
+
 train_data = np.genfromtxt('../data/assign2_train_data.txt', delimiter=',')
 #print "train_data:", train_data
 
@@ -185,6 +190,13 @@ def error_function(o, y):
 
 
 def train(n_data, o, lr, H, bs):
+
+    bottom_lines = []
+    for ii in range(4):
+        bottom_lines.append([])
+
+    #print "bottom_lines: ", bottom_lines
+
     test_data = np.genfromtxt('../data/assign2_test_data.txt', delimiter=',')
     o_test = test_data[:, 7]
     n_test_data = get_normalized_test_data(test_data)
@@ -228,7 +240,7 @@ def train(n_data, o, lr, H, bs):
 
     delta_ws0 = np.zeros((H, 5))
     delta_ws1 = np.zeros(H)
-    while epoch <= 1000:
+    while epoch <= 100:
 
         i_data = 0 # index in the traning data list
         i_bs = 0 # index of batch size
@@ -360,14 +372,21 @@ def train(n_data, o, lr, H, bs):
                         ws0[ii][jj] += delta_ws0[ii][jj]
                 ### end of updating ws0
 
+
                 delta_ws0 = np.zeros((H, 5))
                 delta_ws1 = np.zeros(H)
                 i_bs = -1
-
+            ### end of mini batch_size
 
             hidden_os = []
             i_data += 1
             i_bs += 1
+
+        bottom_lines[0].append(train_all_output_0_accuracy)
+        bottom_lines[1].append(test_all_output_0_accuracy)
+        bottom_lines[2].append(train_all_output_1_accuracy)
+        bottom_lines[3].append(test_all_output_1_accuracy)
+        # print "bottom_lines: ", bottom_lines
 
         #test every epoch
         train_accuracy = get_one_feedforward_accuracy(n_data, H, ws0, ws1, o)
@@ -376,13 +395,13 @@ def train(n_data, o, lr, H, bs):
         test_accuracies.append(test_accuracy)
         if epoch % 1 == 0:
             print "   "
-            print "epoch:", epoch
+            print "epoch:", epoch, " lr: ", lr, " H: ", H, " delta2: ", delta2
             print "Train accuracy:\t", train_accuracy
             print "Test accuracy:\t", test_accuracy
             print "ws0 :", ws0
             print "ws1 :", ws1
             # print "delta1: ", delta1
-            print "delta2: ", delta2
+
         epoch += 1
 
     print "Training ends."
@@ -393,7 +412,7 @@ def train(n_data, o, lr, H, bs):
     # test_data = np.genfromtxt('../data/assign2_test_data.txt', delimiter=',')
     # print "test_data:", test_data
     # test(test_data, H, ws0, ws1, o_test)
-    plot_accuracy(train_accuracies, test_accuracies, lr, bs)
+    plot_accuracy(train_accuracies, test_accuracies, bottom_lines, lr, bs)
 
 def get_normalized_test_data(test_data):
     test_t = test_data[:,2]
@@ -461,7 +480,7 @@ def get_one_feedforward_accuracy(n_data, H, ws0, ws1, o_t):
     ##calculate accuracy
     return accuracy
 
-def plot_accuracy(train_accuracies, test_accuracies, lr, bs):
+def plot_accuracy(train_accuracies, test_accuracies, bottom_lines, lr, bs):
     train_accs_y = np.array(train_accuracies)
     epochs = []
     for i in range(len(train_accuracies)):
@@ -470,6 +489,20 @@ def plot_accuracy(train_accuracies, test_accuracies, lr, bs):
     plt.plot(epochs_x, train_accs_y, label = 'train accuracy')
     test_accs_y = np.array(test_accuracies)
     plt.plot(epochs_x, test_accs_y, label = 'test accuracy')
+
+    train_all_output_0_accuracy_y = bottom_lines[0]
+    plt.plot(epochs_x, train_all_output_0_accuracy_y, label = 'train_all_output_0_accuracy')
+
+    test_all_output_0_accuracy_y = bottom_lines[1]
+    plt.plot(epochs_x, test_all_output_0_accuracy_y, label = 'test_all_output_0_accuracy')
+
+    train_all_output_1_accuracy_y = bottom_lines[2]
+    plt.plot(epochs_x, train_all_output_1_accuracy_y, label = 'train_all_output_1_accuracy')
+
+    test_all_output_1_accuracy_y = bottom_lines[3]
+    plt.plot(epochs_x, test_all_output_1_accuracy_y, label = 'test_all_output_1_accuracy')
+
+
     title = ' lr:'
     title += str(lr)
     title += ' batch_size:'
@@ -483,7 +516,7 @@ def plot_accuracy(train_accuracies, test_accuracies, lr, bs):
 # In[25]:
 
 
-train(n_data, o, lr = 0.005, H = 5, bs = 100)
+train(n_data, o, lr = 0.01, H = 2, bs = 100)
 
 
 # In[ ]:
