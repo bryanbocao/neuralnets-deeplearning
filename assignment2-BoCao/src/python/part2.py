@@ -16,10 +16,10 @@ import random
 import copy
 import matplotlib.pyplot as plt
 
-train_all_output_0_accuracy = 0.787670391748
-test_all_output_0_accuracy = 0.789889253486
-train_all_output_1_accuracy = 0.212329608252
-test_all_output_1_accuracy = 0.210110746514
+all_output_0_train_accuracy = 0.787670391748
+all_output_0_test_accuracy = 0.789889253486
+all_output_1_train_accuracy = 0.212329608252
+all_output_1_test_accuracy = 0.210110746514
 
 train_data = np.genfromtxt('../data/assign2_train_data.txt', delimiter=',')
 #print "train_data:", train_data
@@ -393,10 +393,10 @@ def train(n_data, o, lr, H, bs):
             i_data += 1
             i_bs += 1
 
-        bottom_lines[0].append(train_all_output_0_accuracy)
-        bottom_lines[1].append(test_all_output_0_accuracy)
-        bottom_lines[2].append(train_all_output_1_accuracy)
-        bottom_lines[3].append(test_all_output_1_accuracy)
+        bottom_lines[0].append(all_output_0_train_accuracy)
+        bottom_lines[1].append(all_output_0_test_accuracy)
+        bottom_lines[2].append(all_output_1_train_accuracy)
+        bottom_lines[3].append(all_output_1_test_accuracy)
         # print "bottom_lines: ", bottom_lines
 
         #test every epoch
@@ -531,17 +531,17 @@ def plot_accuracy(train_accuracies, test_accuracies, bottom_lines, lr, bs):
     test_accs_y = np.array(test_accuracies)
     plt.plot(epochs_x, test_accs_y, label = 'test accuracy')
 
-    train_all_output_0_accuracy_y = bottom_lines[0]
-    plt.plot(epochs_x, train_all_output_0_accuracy_y, label = 'train_all_output_0_accuracy')
+    all_output_0_train_accuracy_y = bottom_lines[0]
+    plt.plot(epochs_x, all_output_0_train_accuracy_y, label = 'all_output_0_train_accuracy_y')
 
-    test_all_output_0_accuracy_y = bottom_lines[1]
-    plt.plot(epochs_x, test_all_output_0_accuracy_y, label = 'test_all_output_0_accuracy')
+    all_output_0_test_accuracy_y = bottom_lines[1]
+    plt.plot(epochs_x, all_output_0_test_accuracy_y, label = 'all_output_0_test_accuracy_y')
 
-    #train_all_output_1_accuracy_y = bottom_lines[2]
-    #plt.plot(epochs_x, train_all_output_1_accuracy_y, label = 'train_all_output_1_accuracy')
+    #all_output_1_train_accuracy_y = bottom_lines[2]
+    #plt.plot(epochs_x, all_output_1_train_accuracy_y, label = 'all_output_1_train_accuracy_y')
 
-    #test_all_output_1_accuracy_y = bottom_lines[3]
-    #plt.plot(epochs_x, test_all_output_1_accuracy_y, label = 'test_all_output_1_accuracy')
+    #all_output_1_test_accuracy_y = bottom_lines[3]
+    #plt.plot(epochs_x, all_output_1_test_accuracy_y, label = 'all_output_1_test_accuracy_y')
 
 
     title = ' lr:'
