@@ -1,11 +1,3 @@
-
-
-# Reference:
-# coding: utf-8
-
-# In[3]:
-
-
 '''
 Author: Bryan Bo Cao
 Email: boca7588@colorado.edu or bo.cao-1@colorado.edu
@@ -46,8 +38,6 @@ def normalize_date(date_t):
         time_t.append(float(time_value) / 86400)
     return time_t
 
-
-
 #data
 data = np.column_stack((t, hu, lt, co2, hu_r))
 #print "data:", data
@@ -62,8 +52,6 @@ print "co2: ", co2
 print "hu_r: ", hu_r
 print "o: ", o
 '''
-
-# In[4]:
 
 def normalize(data, dataset_type):
     #normalize train data
@@ -131,16 +119,8 @@ def normalize(data, dataset_type):
 
     return n_data
 
-
-# In[5]:
-
-
 n_data = normalize(data, dataset_type = "train")
 print "n_data:", n_data
-
-
-# In[6]:
-
 
 def initialize_weights1():
     w_t = random.random()
@@ -159,9 +139,6 @@ init_ws1 = initialize_weights1()
 ws1 = copy.deepcopy(init_ws1)
 print "ws1: ", ws1
 
-# In[7]:
-
-
 # initialize random weights from layer with i neurons to layer with j neurons -- fully connected layer including bias
 # note that each row is the weights list from former layer to jth neuron in the latter layer
 def initialize_weights(i, j):
@@ -170,20 +147,12 @@ def initialize_weights(i, j):
     return ws
     #return np.dot(ws, 5)
 
-
-# In[8]:
-
-
 # test inner
 a = [1, 2, 3]
 b = [2, 0, 5]
 c = 4
 #np.inner(a, b)
 np.inner(a, c)
-
-
-# In[9]:
-
 
 def sigmoid(x):
     # print "sigmoid(x): ", 1 / (1 + np.exp(-x))
@@ -208,8 +177,6 @@ def perceptron(sum_of_inputs):
 # squared error
 def error_function(target, actual_output):
     return (target - actual_output) ** 2 / 2
-
-# In[16]:
 
 def get_baseline_error(o, C):
     baseline_error = 0
@@ -643,16 +610,4 @@ def plot_error(baseline_error0s, baseline_error1s, sum_error_per_epochs, lr, H, 
     plt.legend()
     plt.show()
 
-# In[25]:
-
-
 train(n_data, o, lr = 0.01, H = 5, bs = 100)
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:

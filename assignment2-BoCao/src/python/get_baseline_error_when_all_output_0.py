@@ -1,9 +1,3 @@
-
-# coding: utf-8
-
-# In[3]:
-
-
 '''
 Author: Bryan Bo Cao
 Email: boca7588@colorado.edu or bo.cao-1@colorado.edu

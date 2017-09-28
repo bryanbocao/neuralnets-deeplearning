@@ -1,9 +1,3 @@
-
-# coding: utf-8
-
-# In[39]:
-
-
 '''
 Author: Bryan Bo Cao
 Email: boca7588@colorado.edu or bo.cao-1@colorado.edu
@@ -45,10 +39,6 @@ print "lt: ", lt
 print "co2: ", co2
 print "hu_r: ", hu_r
 print "o: ", o
-
-
-# In[40]:
-
 
 def normalize(data):
     #normalize train data
@@ -107,16 +97,8 @@ def normalize(data):
 
     return n_data
 
-
-# In[41]:
-
-
 n_data = normalize(data)
 print "n_data:", n_data
-
-
-# In[46]:
-
 
 def initialize_weights():
     w_t = random.random() * 2
@@ -130,14 +112,9 @@ def initialize_weights():
     ws = [w_t, w_hu, w_lt, w_co2, w_hu_r, b]
     return ws
 
-
 init_ws = initialize_weights()
 ws = copy.deepcopy(init_ws)
 print "ws: ", ws
-
-
-# In[47]:
-
 
 def sigmoid(x):
     return 1 / (1 + np.exp(-x))
@@ -345,10 +322,5 @@ def plot_accuracy(train_accuracies, test_accuracies, bottom_lines, lr, bs):
     plt.ylabel('accuracy')
     plt.legend()
     plt.show()
-
-
-
-# In[48]:
-
 
 train(n_data, lr = 0.0001, bs = 1)
