@@ -266,7 +266,7 @@ def train(n_data, o, lr, H, bs):
     sum_error_per_epoch = 0
     mean_squared_error_per_epoch = 0
 
-    while epoch <= 10:
+    while epoch <= 500:
 
         i_data = 0 # index in the traning data list
         i_bs = 0 # index of batch size
@@ -580,14 +580,16 @@ def plot_accuracy(train_accuracies, test_accuracies, bottom_lines, lr, H, bs):
     #all_output_1_test_accuracy_y = bottom_lines[3]
     #plt.plot(epochs_x, all_output_1_test_accuracy_y, label = 'all_output_1_test_accuracy')
 
-
     title = ' lr:'
     title += str(lr)
     title += ' batch_size:'
     title += str(bs)
+    title += ' H:'
+    title += str(H)
+
     plt.title(title)
     plt.xlabel('epoch')
-    plt.ylabel('accuracy')
+    plt.ylabel('Error')
     plt.legend()
     plt.show()
 

@@ -241,7 +241,7 @@ def train(n_data, o, lr, H, bs):
     sum_error_per_epoch = 0
     mean_squared_error_per_epoch = 0
 
-    while epoch <= 300:
+    while epoch <= 60:
 
         i_data = 0 # index in the traning data list
         i_bs = 0 # index of batch size
@@ -259,6 +259,7 @@ def train(n_data, o, lr, H, bs):
 
             error_per_obs = 0
             mean_squared_error_per_epoch = 0
+            delta2 = 0
             # each hidden neuron
             hidden_os = [] # hidden layer outputs
             #print "train_n_data[i_data]: ", train_n_data[i_data]
@@ -300,7 +301,6 @@ def train(n_data, o, lr, H, bs):
 
             # Reference: https://page.mi.fu-berlin.de/rojas/neural/chapter/K7.pdf
 
-
             delta_ws1_t = []
             delta1 = []
             for i_hidden_node in range(H):
@@ -314,6 +314,7 @@ def train(n_data, o, lr, H, bs):
             #delta_b1 = -lr * delta2
             #delta_b1 = lr * delta2
             #delta_ws1.append(delta_b1)
+            #print "delta_ws1_t: ", delta_ws1_t
             #print "delta_ws1: ", delta_ws1
 
             for ii in range(len(delta_ws1)):
@@ -343,6 +344,7 @@ def train(n_data, o, lr, H, bs):
             for ii in range(len(delta_ws0)):
                 for jj in range(len(delta_ws0[0])):
                     delta_ws0[ii][jj] += delta_ws0_t[ii][jj]
+                    #print "delta_ws0[ii][jj]: ", delta_ws0[ii][jj]
             #print "delta_ws0:", delta_ws0
 
             # calculate error
@@ -597,4 +599,4 @@ def plot_error(baseline_error0s, baseline_error1s, mean_squared_error_per_epochs
     plt.legend()
     plt.show()
 
-train(n_data, o, lr = 0.00001, H = 1, bs = 100)
+train(n_data, o, lr = 0.005, H = 1, bs = 100)
