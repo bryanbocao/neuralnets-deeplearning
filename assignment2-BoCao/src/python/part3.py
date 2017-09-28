@@ -182,7 +182,7 @@ def get_baseline_error(o, C):
     baseline_error = 0
     for o_i in range(len(o)):
         baseline_error += error_function(o[o_i], C)
-    return baseline_error
+    return baseline_error / len(o)
 
 def train(n_data, o, lr, H, bs):
 
@@ -212,7 +212,7 @@ def train(n_data, o, lr, H, bs):
     #print "baseline_error1: ", baseline_error1
     baseline_error0s = []
     baseline_error1s = []
-    sum_error_per_epochs = []
+    mean_squared_error_per_epochs = []
 
     test_data = np.genfromtxt('../data/assign2_test_data.txt', delimiter=',')
     o_test = test_data[:, 7]
@@ -264,8 +264,9 @@ def train(n_data, o, lr, H, bs):
     delta_ws1 = np.zeros(H)
 
     sum_error_per_epoch = 0
+    mean_squared_error_per_epoch = 0
 
-    while epoch <= 200:
+    while epoch <= 10:
 
         i_data = 0 # index in the traning data list
         i_bs = 0 # index of batch size
@@ -282,6 +283,7 @@ def train(n_data, o, lr, H, bs):
         while i_data < len(train_data):
 
             error_per_obs = 0
+            mean_squared_error_per_epoch = 0
             # each hidden neuron
             hidden_os = [] # hidden layer outputs
             #print "train_n_data[i_data]: ", train_n_data[i_data]
@@ -414,8 +416,8 @@ def train(n_data, o, lr, H, bs):
             i_data += 1
             i_bs += 1
             # end of one observation
-
-        sum_error_per_epochs.append(sum_error_per_epoch)
+        mean_squared_error_per_epoch = sum_error_per_epoch / len(n_data)
+        mean_squared_error_per_epochs.append(mean_squared_error_per_epoch)
 
         bottom_lines[0].append(all_output_0_train_accuracy)
         bottom_lines[1].append(all_output_0_test_accuracy)
@@ -453,25 +455,31 @@ def train(n_data, o, lr, H, bs):
             print "epoch:", epoch, " lr:", lr, " H:", H, " delta2:", delta2
             print "Train accuracy:\t", train_accuracy
             print "Test accuracy:\t", test_accuracy
-            print "Sum_error_per_epoch:\t", sum_error_per_epoch
+            print "Mean squared error per epoch:\t", mean_squared_error_per_epoch
             print "ws0:", ws0
             print "ws1:", ws1
             # print "delta1: ", delta1
 
         epoch += 1
 
+    print "     "
     print "Training ends."
+    print "     "
+    print "baseline_error0: ", baseline_error0
+    print "baseline_error1: ", baseline_error1
     print "Initial input to hidden layer weights:", init_ws0
     print "Trained input to hidden layer weights:", ws0
     print "Initial hidden to output layer weights:", init_ws1
     print "Trained hidden to output layer weights:", ws1
 
+    print "     "
     print "Epoch_when_highest_train_accuracy:", epoch_when_highest_train_accuracy
     print "Train_accuracy_when_highest_train_accuracy:", train_accuracy_when_highest_train_accuracy
     print "Test_accuracy_when_highest_train_accuracy:", test_accuracy_when_highest_train_accuracy
     print "ws0_when_highest_train_accuracy:", ws0_when_highest_train_accuracy
     print "ws1_when_highest_train_accuracy:", ws1_when_highest_train_accuracy
 
+    print "     "
     print "Epoch_when_highest_test_accuracy:", epoch_when_highest_test_accuracy
     print "Train_accuracy_when_highest_test_accuracy:", train_accuracy_when_highest_test_accuracy
     print "Test_accuracy_when_highest_test_accuracy:", test_accuracy_when_highest_test_accuracy
@@ -482,7 +490,7 @@ def train(n_data, o, lr, H, bs):
     # print "test_data:", test_data
     # test(test_data, H, ws0, ws1, o_test)
     plot_accuracy(train_accuracies, test_accuracies, bottom_lines, lr, H, bs)
-    plot_error(baseline_error0s, baseline_error1s, sum_error_per_epochs, lr, H, bs)
+    plot_error(baseline_error0s, baseline_error1s, mean_squared_error_per_epochs, lr, H, bs)
 
 def get_normalized_test_data(test_data):
     test_t = test_data[:,2]
@@ -583,13 +591,13 @@ def plot_accuracy(train_accuracies, test_accuracies, bottom_lines, lr, H, bs):
     plt.legend()
     plt.show()
 
-def plot_error(baseline_error0s, baseline_error1s, sum_error_per_epochs, lr, H, bs):
-    sum_error_per_epochs_y = np.array(sum_error_per_epochs)
+def plot_error(baseline_error0s, baseline_error1s, mean_squared_error_per_epochs, lr, H, bs):
+    mean_squared_error_per_epochs_y = np.array(mean_squared_error_per_epochs)
     epochs = []
-    for i in range(len(sum_error_per_epochs)):
+    for i in range(len(mean_squared_error_per_epochs)):
         epochs.append(i)
     epochs_x = np.array(epochs)
-    plt.plot(epochs_x, sum_error_per_epochs_y, label = 'Network error')
+    plt.plot(epochs_x, mean_squared_error_per_epochs_y, label = 'Network error')
 
     baseline_error0s_y = baseline_error0s
     plt.plot(epochs_x, baseline_error0s_y, label = 'baseline_error0')
@@ -606,7 +614,7 @@ def plot_error(baseline_error0s, baseline_error1s, sum_error_per_epochs, lr, H, 
 
     plt.title(title)
     plt.xlabel('epoch')
-    plt.ylabel('accuracy')
+    plt.ylabel('Error')
     plt.legend()
     plt.show()
 

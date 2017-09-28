@@ -167,7 +167,7 @@ def train(n_data, lr, bs):
     n_co2 = n_data[:, 3]
     n_hu_r = n_data[:, 4]
     error = 0
-    while epoch <= 500:
+    while epoch <= 1000:
         # train
         i = 0
         for (n_t_i, n_hu_i, n_lt_i, n_co2_i, n_hu_r_i, o_i) in zip(n_t, n_hu, n_lt, n_co2, n_hu_r, o):
@@ -241,10 +241,24 @@ def train(n_data, lr, bs):
             i += 1
 
         epoch += 1
+
+    print "    "
     print "Training ends."
-    print "Initial weights:", init_ws
-    print "Trained weights:", ws
-    print "Trained data accuracy:", train_accuracies[-1]
+    print "     "
+    print "Initial input to hidden layer weights:", init_ws
+    print "Trained input to hidden layer weights:", ws
+
+    print "     "
+    print "Epoch_when_highest_train_accuracy:", epoch_when_highest_train_accuracy
+    print "Train_accuracy_when_highest_train_accuracy:", train_accuracy_when_highest_train_accuracy
+    print "Test_accuracy_when_highest_train_accuracy:", test_accuracy_when_highest_train_accuracy
+    print "ws_when_highest_train_accuracy:", ws_when_highest_train_accuracy
+
+    print "     "
+    print "Epoch_when_highest_test_accuracy:", epoch_when_highest_test_accuracy
+    print "Train_accuracy_when_highest_test_accuracy:", train_accuracy_when_highest_test_accuracy
+    print "Test_accuracy_when_highest_test_accuracy:", test_accuracy_when_highest_test_accuracy
+    print "ws_when_highest_test_accuracy:", ws_when_highest_test_accuracy
 
     # print "test_data:", test_data
     # test(test_data, ws, bs = 1)
