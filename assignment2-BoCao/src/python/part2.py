@@ -182,12 +182,16 @@ def perceptron(sum_of_inputs):
 
 # Reference: http://cs229.stanford.edu/notes/cs229-notes1.pdf
 # squared error
-def error_function(o, y):
-    return (o - y) ** 2 / 2
-
+def error_function(target, actual_output):
+    return (target - actual_output) ** 2 / 2
 
 # In[16]:
 
+def get_baseline_error(o, C):
+    baseline_error = 0
+    for o_i in range(len(o)):
+        baseline_error += error_function(o[o_i], C)
+    return baseline_error
 
 def train(n_data, o, lr, H, bs):
 
@@ -200,13 +204,25 @@ def train(n_data, o, lr, H, bs):
     test_accuracy_when_highest_train_accuracy = 0
     epoch_when_highest_train_accuracy = 0
     ws0_when_highest_train_accuracy = []
+    ws1_when_highest_train_accuracy = []
+    highest_test_accuracy = 0
+
     highest_test_accuracy = 0
     train_accuracy_when_highest_test_accuracy = 0
     test_accuracy_when_highest_test_accuracy = 0
     epoch_when_highest_test_accuracy = 0
-    ws1_when_highest_train_accuracy = []
+    ws0_when_highest_test_accuracy = []
+    ws1_when_highest_test_accuracy = []
 
     #print "bottom_lines: ", bottom_lines
+
+    baseline_error0 = get_baseline_error(o, 0)
+    baseline_error1 = get_baseline_error(o, 1)
+    #print "baseline_error0: ", baseline_error0
+    #print "baseline_error1: ", baseline_error1
+    baseline_error0s = []
+    baseline_error1s = []
+    sum_error_per_epochs = []
 
     test_data = np.genfromtxt('../data/assign2_test_data.txt', delimiter=',')
     o_test = test_data[:, 7]
@@ -227,9 +243,9 @@ def train(n_data, o, lr, H, bs):
 
     #train_n_data = np.column_stack((n_t, n_hu, n_lt, n_co2, n_hu_r, n_b))
     train_n_data = np.column_stack((n_t, n_hu, n_lt, n_co2, n_hu_r))
-    print "n_t:", n_t
-    print "n_hu:", n_hu
-    print "n_lt:", n_lt
+    #print "n_t:", n_t
+    #print "n_hu:", n_hu
+    #print "n_lt:", n_lt
     #print "n_b:", n_b
     print "train_n_data:", train_n_data
 
@@ -251,7 +267,10 @@ def train(n_data, o, lr, H, bs):
 
     delta_ws0 = np.zeros((H, 5))
     delta_ws1 = np.zeros(H)
-    while epoch <= 1000:
+
+    sum_error_per_epoch = 0
+
+    while epoch <= 200:
 
         i_data = 0 # index in the traning data list
         i_bs = 0 # index of batch size
@@ -263,8 +282,11 @@ def train(n_data, o, lr, H, bs):
         #print "delta_ws1", delta_ws1
         # one epoch
         #print "len(train_data)", len(train_data)
+        sum_error_per_epoch = 0
+        error_per_obs = 0
         while i_data < len(train_data):
 
+            error_per_obs = 0
             # each hidden neuron
             hidden_os = [] # hidden layer outputs
             #print "train_n_data[i_data]: ", train_n_data[i_data]
@@ -351,6 +373,10 @@ def train(n_data, o, lr, H, bs):
                     delta_ws0[ii][jj] += delta_ws0_t[ii][jj]
             #print "delta_ws0:", delta_ws0
 
+            # calculate error
+            error_per_obs = error_function(o[i_data], activation(sum_to_output_layer))
+            sum_error_per_epoch += error_per_obs
+
             # only update weights after bs batch_size
             # print "o:",o
             if i_bs >= bs:
@@ -392,12 +418,18 @@ def train(n_data, o, lr, H, bs):
             hidden_os = []
             i_data += 1
             i_bs += 1
+            # end of one observation
+
+        sum_error_per_epochs.append(sum_error_per_epoch)
 
         bottom_lines[0].append(all_output_0_train_accuracy)
         bottom_lines[1].append(all_output_0_test_accuracy)
         bottom_lines[2].append(all_output_1_train_accuracy)
         bottom_lines[3].append(all_output_1_test_accuracy)
         # print "bottom_lines: ", bottom_lines
+
+        baseline_error0s.append(baseline_error0)
+        baseline_error1s.append(baseline_error1)
 
         #test every epoch
         train_accuracy = get_one_feedforward_accuracy(n_data, H, ws0, ws1, o)
@@ -426,6 +458,7 @@ def train(n_data, o, lr, H, bs):
             print "epoch:", epoch, " lr:", lr, " H:", H, " delta2:", delta2
             print "Train accuracy:\t", train_accuracy
             print "Test accuracy:\t", test_accuracy
+            print "Sum_error_per_epoch:\t", sum_error_per_epoch
             print "ws0:", ws0
             print "ws1:", ws1
             # print "delta1: ", delta1
@@ -453,7 +486,8 @@ def train(n_data, o, lr, H, bs):
     # test_data = np.genfromtxt('../data/assign2_test_data.txt', delimiter=',')
     # print "test_data:", test_data
     # test(test_data, H, ws0, ws1, o_test)
-    plot_accuracy(train_accuracies, test_accuracies, bottom_lines, lr, bs)
+    plot_accuracy(train_accuracies, test_accuracies, bottom_lines, lr, H, bs)
+    plot_error(baseline_error0s, baseline_error1s, sum_error_per_epochs, lr, H, bs)
 
 def get_normalized_test_data(test_data):
     test_t = test_data[:,2]
@@ -521,7 +555,7 @@ def get_one_feedforward_accuracy(n_data, H, ws0, ws1, o_t):
     ##calculate accuracy
     return accuracy
 
-def plot_accuracy(train_accuracies, test_accuracies, bottom_lines, lr, bs):
+def plot_accuracy(train_accuracies, test_accuracies, bottom_lines, lr, H, bs):
     train_accs_y = np.array(train_accuracies)
     epochs = []
     for i in range(len(train_accuracies)):
@@ -532,22 +566,52 @@ def plot_accuracy(train_accuracies, test_accuracies, bottom_lines, lr, bs):
     plt.plot(epochs_x, test_accs_y, label = 'test accuracy')
 
     all_output_0_train_accuracy_y = bottom_lines[0]
-    plt.plot(epochs_x, all_output_0_train_accuracy_y, label = 'all_output_0_train_accuracy_y')
+    plt.plot(epochs_x, all_output_0_train_accuracy_y, label = 'all_output_0_train_accuracy')
 
     all_output_0_test_accuracy_y = bottom_lines[1]
-    plt.plot(epochs_x, all_output_0_test_accuracy_y, label = 'all_output_0_test_accuracy_y')
+    plt.plot(epochs_x, all_output_0_test_accuracy_y, label = 'all_output_0_test_accuracy')
 
     #all_output_1_train_accuracy_y = bottom_lines[2]
-    #plt.plot(epochs_x, all_output_1_train_accuracy_y, label = 'all_output_1_train_accuracy_y')
+    #plt.plot(epochs_x, all_output_1_train_accuracy_y, label = 'all_output_1_train_accuracy')
 
     #all_output_1_test_accuracy_y = bottom_lines[3]
-    #plt.plot(epochs_x, all_output_1_test_accuracy_y, label = 'all_output_1_test_accuracy_y')
+    #plt.plot(epochs_x, all_output_1_test_accuracy_y, label = 'all_output_1_test_accuracy')
 
 
     title = ' lr:'
     title += str(lr)
     title += ' batch_size:'
     title += str(bs)
+    title += ' H'
+    title += str(H)
+
+    plt.title(title)
+    plt.xlabel('epoch')
+    plt.ylabel('accuracy')
+    plt.legend()
+    plt.show()
+
+def plot_error(baseline_error0s, baseline_error1s, sum_error_per_epochs, lr, H, bs):
+    sum_error_per_epochs_y = np.array(sum_error_per_epochs)
+    epochs = []
+    for i in range(len(sum_error_per_epochs)):
+        epochs.append(i)
+    epochs_x = np.array(epochs)
+    plt.plot(epochs_x, sum_error_per_epochs_y, label = 'Network error')
+
+    baseline_error0s_y = baseline_error0s
+    plt.plot(epochs_x, baseline_error0s_y, label = 'baseline_error0')
+
+    baseline_error1s_y = baseline_error1s
+    plt.plot(epochs_x, baseline_error1s_y, label = 'baseline_error1')
+
+    title = ' lr:'
+    title += str(lr)
+    title += ' batch_size:'
+    title += str(bs)
+    title += ' H:'
+    title += str(H)
+
     plt.title(title)
     plt.xlabel('epoch')
     plt.ylabel('accuracy')
@@ -557,7 +621,7 @@ def plot_accuracy(train_accuracies, test_accuracies, bottom_lines, lr, bs):
 # In[25]:
 
 
-train(n_data, o, lr = 0.01, H = 2, bs = 100)
+train(n_data, o, lr = 0.05, H = 5, bs = 100)
 
 
 # In[ ]:
