@@ -25,7 +25,7 @@ cnt = 0
 for ii in range(len(o)):
     if o[ii] == 1:
         cnt += 1
-print "Train accuracy with all outputs 0:\t", (float(cnt) / float(len(o)))
+print "Train accuracy with all outputs 1:\t", (float(cnt) / float(len(o)))
 
 
 test_data = np.genfromtxt('../data/assign2_test_data.txt', delimiter=',')
@@ -36,4 +36,4 @@ cnt = 0
 for ii in range(len(to)):
     if to[ii] == 1:
         cnt += 1
-print "Test accuracy with all outputs 0:\t", (float(cnt) / float(len(to)))
+print "Test accuracy with all outputs 1:\t", (float(cnt) / float(len(to)))

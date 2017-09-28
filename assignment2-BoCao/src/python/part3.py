@@ -266,7 +266,7 @@ def train(n_data, o, lr, H, bs):
     sum_error_per_epoch = 0
     mean_squared_error_per_epoch = 0
 
-    while epoch <= 500:
+    while epoch <= 100:
 
         i_data = 0 # index in the traning data list
         i_bs = 0 # index of batch size
@@ -620,4 +620,4 @@ def plot_error(baseline_error0s, baseline_error1s, mean_squared_error_per_epochs
     plt.legend()
     plt.show()
 
-train(n_data, o, lr = 0.01, H = 5, bs = 100)
+train(n_data, o, lr = 0.05, H = 5, bs = 100)
