@@ -1,4 +1,4 @@
-Cubist-Cubist A,Cubist-Cubist B,Cubist-Cubist Cosine,Same/Diff,N,Percent Correct
+Cubist-Cubist-A,Cubist-Cubist-B,Cubist-Cubist-Cosine,Same/Diff,N,Percent-Correct
 0945-cubist-16x16.jpg,0363-cubist-16x16.jpg,0.9299480038,same category,30,93.33%
 0189-cubist-16x16.jpg,0188-cubist-16x16.jpg,0.9487637102,same category,42,90.48%
 0895-cubist-16x16.jpg,0227-cubist-16x16.jpg,0.9277349651,same category,18,88.89%
