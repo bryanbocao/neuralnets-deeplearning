@@ -78,12 +78,12 @@ class ArtData:
         # alpha same
         a_c_c = df_c_c['Cubist-Cubist-A'][1:49]
         b_c_c = df_c_c['Cubist-Cubist-B'][1:49]
-        consine_c_c = df_c_c['Cubist-Cubist-Cosine'][1:49]
+        cosine_c_c = df_c_c['Cubist-Cubist-Cosine'][1:49]
         accuracy_c_c = df_c_c['Percent-Correct'][1:49]
 
         a_i_i = df_i_i['Impressionist-Impressionist-A'][1:49]
         b_i_i = df_i_i['Impressionist-Impressionist-B'][1:49]
-        consine_i_i = df_i_i['Impressionist-Impressionist-Cosine'][1:49]
+        cosine_i_i = df_i_i['Impressionist-Impressionist-Cosine'][1:49]
         accuracy_i_i = df_i_i['Percent-Correct'][1:49]
 
         a = []
@@ -94,23 +94,29 @@ class ArtData:
         b.extend(b_c_c)
         b.extend(b_i_i)
 
-        consine = []
-        consine.extend(consine_c_c)
-        consine.extend(consine_i_i)
+        cosine_str = []
+        cosine_str.extend(cosine_c_c)
+        cosine_str.extend(cosine_i_i)
+        cosine = []
+        for cos in cosine_str:
+            cosine.append(float(cos))
         
         distance = self.get_distance_list(a, b)
 
+        accuracy_str = []
+        accuracy_str.extend(accuracy_c_c)
+        accuracy_str.extend(accuracy_i_i)
         accuracy = []
-        accuracy.extend(accuracy_c_c)
-        accuracy.extend(accuracy_i_i)
+        for acc in accuracy_str:
+            accuracy.append(float(acc[:-2]) / 100)
         
-        self.alpha_pairs['same'] = [a, b, consine, distance, accuracy]
+        self.alpha_pairs['same'] = [a, b, cosine, distance, accuracy]
         #print (self.alpha_pairs['same'])
 
         # alpha diff
         a_c_i = df_c_i['Cubist-Impressionist-A'][1:97]
         b_c_i = df_c_i['Cubist-Impressionist-B'][1:97]
-        consine_c_i = df_c_i['Cubist-Impressionist-Cosine'][1:97]
+        cosine_c_i = df_c_i['Cubist-Impressionist-Cosine'][1:97]
         accuracy_c_i = df_c_i['Percent-Correct'][1:97]
 
         a = []
@@ -119,14 +125,21 @@ class ArtData:
         b = []
         b.extend(b_c_i)
 
-        consine = []
-        consine.extend(consine_c_i)
+        cosine_str = []
+        cosine_str.extend(cosine_c_i)
+        cosine = []
+        for cos in cosine_str:
+            cosine.append(float(cos))
         
         distance = self.get_distance_list(a, b)
 
+        accuracy_str = []
+        accuracy_str.extend(accuracy_c_i)
         accuracy = []
-        accuracy.extend(accuracy_c_i)
-        self.alpha_pairs['diff'] = [a, b, consine, distance, accuracy]
+        for acc in accuracy_str:
+            accuracy.append(float(acc[:-2]) / 100)
+        
+        self.alpha_pairs['diff'] = [a, b, cosine, distance, accuracy]
         #print (self.alpha_pairs['diff'])
 
 
@@ -134,12 +147,12 @@ class ArtData:
         a = df_c_c['Cubist-Cubist-A'][49:]
         a_c_c = df_c_c['Cubist-Cubist-A'][49:]
         b_c_c = df_c_c['Cubist-Cubist-B'][49:]
-        consine_c_c = df_c_c['Cubist-Cubist-Cosine'][49:]
+        cosine_c_c = df_c_c['Cubist-Cubist-Cosine'][49:]
         accuracy_c_c = df_c_c['Percent-Correct'][49:]
 
         a_i_i = df_i_i['Impressionist-Impressionist-A'][49:]
         b_i_i = df_i_i['Impressionist-Impressionist-B'][49:]
-        consine_i_i = df_i_i['Impressionist-Impressionist-Cosine'][49:]
+        cosine_i_i = df_i_i['Impressionist-Impressionist-Cosine'][49:]
         accuracy_i_i = df_i_i['Percent-Correct'][49:]
 
         a = []
@@ -150,22 +163,29 @@ class ArtData:
         b.extend(b_c_c)
         b.extend(b_i_i)
 
-        consine = []
-        consine.extend(consine_c_c)
-        consine.extend(consine_i_i)
+        cosine_str = []
+        cosine_str.extend(cosine_c_c)
+        cosine_str.extend(cosine_i_i)
+        cosine = []
+        for cos in cosine_str:
+            cosine.append(float(cos))
         
         distance = self.get_distance_list(a, b)
 
+        accuracy_str = []
+        accuracy_str.extend(accuracy_c_c)
+        accuracy_str.extend(accuracy_i_i)
         accuracy = []
-        accuracy.extend(accuracy_c_c)
-        accuracy.extend(accuracy_i_i)
-        self.beta_pairs['same'] = [a, b, consine, distance, accuracy]
+        for acc in accuracy_str:
+            accuracy.append(float(acc[:-2]) / 100)
+        
+        self.beta_pairs['same'] = [a, b, cosine, distance, accuracy]
         #print (self.beta_pairs['same'])
 
         # beta diff
         a_c_i = df_c_i['Cubist-Impressionist-A'][97:]
         b_c_i = df_c_i['Cubist-Impressionist-B'][97:]
-        consine_c_i = df_c_i['Cubist-Impressionist-Cosine'][97:]
+        cosine_c_i = df_c_i['Cubist-Impressionist-Cosine'][97:]
         accuracy_c_i = df_c_i['Percent-Correct'][97:]
 
         a = []
@@ -174,14 +194,21 @@ class ArtData:
         b = []
         b.extend(b_c_i)
 
-        consine = []
-        consine.extend(consine_c_i)
+        cosine_str = []
+        cosine_str.extend(cosine_c_i)
+        cosine = []
+        for cos in cosine_str:
+            cosine.append(float(cos))
         
         distance = self.get_distance_list(a, b)
 
+        accuracy_str = []
+        accuracy_str.extend(accuracy_c_i)
         accuracy = []
-        accuracy.extend(accuracy_c_i)
-        self.beta_pairs['diff'] = [a, b, consine, distance, accuracy]
+        for acc in accuracy_str:
+            accuracy.append(float(acc[:-2]) / 100)
+        
+        self.beta_pairs['diff'] = [a, b, cosine, distance, accuracy]
         #print (self.beta_pairs['diff'])
         
     def get_distance_list(self, a, b):
