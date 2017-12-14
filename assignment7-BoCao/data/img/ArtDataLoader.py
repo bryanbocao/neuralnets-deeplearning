@@ -12,6 +12,7 @@ import os, sys
 import glob
 import pandas as pd
 import csv
+import math
 
 class ArtData:
     '''
@@ -43,6 +44,10 @@ class ArtData:
             'diff': []
         }
         print("ArtData Initialized!")
+        
+    def load_all_data(self):
+        self.load_images()
+        self.load_metadata()
 
     def load_images(self):
         files = glob.glob(self.metadata_folder + 'img/*.jpg')
@@ -57,6 +62,7 @@ class ArtData:
             print("All images loaded!")
         
     def load_metadata(self):
+                
         df_c_c = pd.read_csv(self.metadata_folder + "metadata-c-c.csv",
                          names=['Cubist-Cubist-A', 'Cubist-Cubist-B', 'Cubist-Cubist-Cosine',
                                 'Same/Diff', 'N', 'Percent-Correct'])
@@ -91,11 +97,14 @@ class ArtData:
         consine = []
         consine.extend(consine_c_c)
         consine.extend(consine_i_i)
+        
+        distance = self.get_distance_list(a, b)
 
         accuracy = []
         accuracy.extend(accuracy_c_c)
         accuracy.extend(accuracy_i_i)
-        self.alpha_pairs['same'] = [a, b, consine, accuracy]
+        
+        self.alpha_pairs['same'] = [a, b, consine, distance, accuracy]
         #print (self.alpha_pairs['same'])
 
         # alpha diff
@@ -112,10 +121,12 @@ class ArtData:
 
         consine = []
         consine.extend(consine_c_i)
+        
+        distance = self.get_distance_list(a, b)
 
         accuracy = []
         accuracy.extend(accuracy_c_i)
-        self.alpha_pairs['diff'] = [a, b, consine, accuracy]
+        self.alpha_pairs['diff'] = [a, b, consine, distance, accuracy]
         #print (self.alpha_pairs['diff'])
 
 
@@ -142,11 +153,13 @@ class ArtData:
         consine = []
         consine.extend(consine_c_c)
         consine.extend(consine_i_i)
+        
+        distance = self.get_distance_list(a, b)
 
         accuracy = []
         accuracy.extend(accuracy_c_c)
         accuracy.extend(accuracy_i_i)
-        self.beta_pairs['same'] = [a, b, consine, accuracy]
+        self.beta_pairs['same'] = [a, b, consine, distance, accuracy]
         #print (self.beta_pairs['same'])
 
         # beta diff
@@ -163,9 +176,19 @@ class ArtData:
 
         consine = []
         consine.extend(consine_c_i)
+        
+        distance = self.get_distance_list(a, b)
 
         accuracy = []
         accuracy.extend(accuracy_c_i)
-        self.beta_pairs['diff'] = [a, b, consine, accuracy]
+        self.beta_pairs['diff'] = [a, b, consine, distance, accuracy]
         #print (self.beta_pairs['diff'])
+        
+    def get_distance_list(self, a, b):
+        distance = []
+        for i in range(len(a)):
+            dist = self.train_images[a[i]] - self.train_images[b[i]]
+            sq_dist = dist ** 2
+            distance.append(math.sqrt(sum(sum(sum(sq_dist)))))
+        return distance
         
