@@ -107,10 +107,13 @@ class ArtData:
         accuracy_str.extend(accuracy_c_c)
         accuracy_str.extend(accuracy_i_i)
         accuracy = []
+        prob_human_similarity = []
         for acc in accuracy_str:
-            accuracy.append(float(acc[:-2]) / 100)
+            percent_v = float(acc[:-2]) / 100
+            accuracy.append(percent_v)
+            prob_human_similarity.append(percent_v)
         
-        self.alpha_pairs['same'] = [a, b, cosine, distance, accuracy]
+        self.alpha_pairs['same'] = [a, b, cosine, distance, accuracy, prob_human_similarity]
         #print (self.alpha_pairs['same'])
 
         # alpha diff
@@ -136,10 +139,13 @@ class ArtData:
         accuracy_str = []
         accuracy_str.extend(accuracy_c_i)
         accuracy = []
+        prob_human_similarity = []
         for acc in accuracy_str:
-            accuracy.append(float(acc[:-2]) / 100)
+            percent_v = float(acc[:-2]) / 100
+            accuracy.append(percent_v)
+            prob_human_similarity.append(1 - percent_v)
         
-        self.alpha_pairs['diff'] = [a, b, cosine, distance, accuracy]
+        self.alpha_pairs['diff'] = [a, b, cosine, distance, accuracy, prob_human_similarity]
         #print (self.alpha_pairs['diff'])
 
 
@@ -176,10 +182,13 @@ class ArtData:
         accuracy_str.extend(accuracy_c_c)
         accuracy_str.extend(accuracy_i_i)
         accuracy = []
+        prob_human_similarity = []
         for acc in accuracy_str:
-            accuracy.append(float(acc[:-2]) / 100)
+            percent_v = float(acc[:-2]) / 100
+            accuracy.append(percent_v)
+            prob_human_similarity.append(percent_v)
         
-        self.beta_pairs['same'] = [a, b, cosine, distance, accuracy]
+        self.beta_pairs['same'] = [a, b, cosine, distance, accuracy, prob_human_similarity]
         #print (self.beta_pairs['same'])
 
         # beta diff
@@ -205,10 +214,13 @@ class ArtData:
         accuracy_str = []
         accuracy_str.extend(accuracy_c_i)
         accuracy = []
+        prob_human_similarity = []
         for acc in accuracy_str:
-            accuracy.append(float(acc[:-2]) / 100)
+            percent_v = float(acc[:-2]) / 100
+            accuracy.append(percent_v)
+            prob_human_similarity.append(1 - percent_v)
         
-        self.beta_pairs['diff'] = [a, b, cosine, distance, accuracy]
+        self.beta_pairs['diff'] = [a, b, cosine, distance, accuracy, percent_v]
         #print (self.beta_pairs['diff'])
         
     def get_distance_list(self, a, b):
