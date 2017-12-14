@@ -220,7 +220,7 @@ class ArtData:
             accuracy.append(percent_v)
             prob_human_similarity.append(1 - percent_v)
         
-        self.beta_pairs['diff'] = [a, b, cosine, distance, accuracy, percent_v]
+        self.beta_pairs['diff'] = [a, b, cosine, distance, accuracy, prob_human_similarity]
         #print (self.beta_pairs['diff'])
         
     def get_distance_list(self, a, b):
