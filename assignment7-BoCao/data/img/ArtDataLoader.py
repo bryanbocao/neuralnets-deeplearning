@@ -31,6 +31,8 @@ class ArtData:
         
         Each Image:
             16 * 16 * 3
+            
+        'flatten' means an image with shape (16 * 16 * 3) is stored in one vector in the shape of (768)
     '''
 
     def __init__(self):
@@ -40,6 +42,10 @@ class ArtData:
 
         self.train_images = {}
         self.train_images_flatten = [] #each image is in the shape of (768) instead of (16, 16, 3)
+        
+        self.alpha_set_flatten = [] #[image_pair_a, image_pair_b, cosine, distance, prob_human_similarity]
+        self.beta_set_flatten = [] #[image_pair_a, image_pair_b, cosine, distance, prob_human_similarity]
+        
         self.alpha_pairs = {
             'same': [],
             'diff': [],
@@ -138,7 +144,16 @@ class ArtData:
             prob_human_similarity.append(percent_v)
         
         self.alpha_pairs['same'] = [a, b, cosine, distance, accuracy, prob_human_similarity]
-        #print (self.alpha_pairs['same'])
+        
+        # assign self.alpha_set_flatten
+        alpha_set_flatten_a = []
+        alpha_set_flatten_b = []
+        alpha_set_flatten_cosine = cosine
+        alpha_set_flatten_distance = distance
+        alpha_set_flatten_prob_human_similarity = prob_human_similarity
+        for i in range(96):
+            alpha_set_flatten_a.append(list(self.train_images[a[i]].flatten()))
+            alpha_set_flatten_b.append(list(self.train_images[b[i]].flatten()))
 
         # alpha diff
         a_c_i = df_c_i['Cubist-Impressionist-A'][1:97]
@@ -170,9 +185,22 @@ class ArtData:
             prob_human_similarity.append(1 - percent_v)
         
         self.alpha_pairs['diff'] = [a, b, cosine, distance, accuracy, prob_human_similarity]
-        #print (self.alpha_pairs['diff'])
+        
+        # assign self.alpha_set_flatten
+        alpha_set_flatten_cosine.extend(cosine)
+        alpha_set_flatten_distance.extend(distance)
+        alpha_set_flatten_prob_human_similarity.extend(prob_human_similarity)
+        for i in range(96):
+            alpha_set_flatten_a.append(list(self.train_images[a[i]].flatten()))
+            alpha_set_flatten_b.append(list(self.train_images[b[i]].flatten()))
+            
+        self.alpha_set_flatten = [alpha_set_flatten_a, alpha_set_flatten_b, 
+                                  alpha_set_flatten_cosine, alpha_set_flatten_distance, 
+                                  alpha_set_flatten_prob_human_similarity]
+        
 
-
+        
+        
         # beta same
         a = df_c_c['Cubist-Cubist-A'][49:]
         a_c_c = df_c_c['Cubist-Cubist-A'][49:]
@@ -213,7 +241,16 @@ class ArtData:
             prob_human_similarity.append(percent_v)
         
         self.beta_pairs['same'] = [a, b, cosine, distance, accuracy, prob_human_similarity]
-        #print (self.beta_pairs['same'])
+        
+        # assign self.beta_set_flatten
+        beta_set_flatten_a = []
+        beta_set_flatten_b = []
+        beta_set_flatten_cosine = cosine
+        beta_set_flatten_distance = distance
+        beta_set_flatten_prob_human_similarity = prob_human_similarity
+        for i in range(96):
+            beta_set_flatten_a.append(list(self.train_images[a[i]].flatten()))
+            beta_set_flatten_b.append(list(self.train_images[b[i]].flatten()))
 
         # beta diff
         a_c_i = df_c_i['Cubist-Impressionist-A'][97:]
@@ -245,7 +282,19 @@ class ArtData:
             prob_human_similarity.append(1 - percent_v)
         
         self.beta_pairs['diff'] = [a, b, cosine, distance, accuracy, prob_human_similarity]
-        #print (self.beta_pairs['diff'])
+       
+        # assign self.beta_set_flatten
+        beta_set_flatten_cosine.extend(cosine)
+        beta_set_flatten_distance.extend(distance)
+        beta_set_flatten_prob_human_similarity.extend(prob_human_similarity)
+        for i in range(96):
+            beta_set_flatten_a.append(list(self.train_images[a[i]].flatten()))
+            beta_set_flatten_b.append(list(self.train_images[b[i]].flatten()))
+            
+        self.beta_set_flatten = [beta_set_flatten_a, beta_set_flatten_b, 
+                                  beta_set_flatten_cosine, beta_set_flatten_distance, 
+                                  beta_set_flatten_prob_human_similarity]
+        
         
     def get_distance_list(self, a, b):
         distance = []
