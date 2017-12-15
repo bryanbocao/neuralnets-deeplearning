@@ -28,13 +28,18 @@ class ArtData:
 
     Images
         1296 * 2 = 2592
+        
+        Each Image:
+            16 * 16 * 3
     '''
 
     def __init__(self):
         
+        self.batch_inddex = 0
         self.metadata_folder = os.getcwd() + '/data/'
 
         self.train_images = {}
+        self.train_images_flatten = [] #each image is in the shape of (768) instead of (16, 16, 3)
         self.alpha_pairs = {
             'same': [],
             'diff': [],
@@ -44,6 +49,22 @@ class ArtData:
             'diff': []
         }
         print("ArtData Initialized!")
+        
+    def next_batch(self, batch_size):
+        batch_data = []
+        total_size = len(self.train_images_flatten)
+        next_batch_index = self.batch_index + batch_size
+        #print("next_batch_index: ", next_batch_index)
+        if next_batch_index < total_size:
+            batch_data = self.train_images_flatten[self.batch_index : next_batch_index]
+            self.batch_index = next_batch_index
+            #print(len(batch_data))
+            return batch_data, batch_data
+        else:
+            batch_data = self.train_images_flatten[self.batch_index : ]
+            self.batch_index = 0
+            #print(len(batch_data))
+            return batch_data, batch_data
         
     def load_all_data(self):
         self.load_images()
@@ -57,9 +78,12 @@ class ArtData:
             image_name_index = file.rfind('/') + 1
             image_name = file[image_name_index:]
             self.train_images[image_name] = image
+            self.train_images_flatten.append(list(image.flatten()))
+            #print(image.shape)
             #print(image_name)
         if (len(self.train_images) > 0):
-            print("All images loaded!")
+            print(len(self.train_images_flatten), " images loaded!")
+        self.batch_index = 0
         
     def load_metadata(self):
                 
