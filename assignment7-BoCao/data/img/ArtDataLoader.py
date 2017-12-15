@@ -57,6 +57,9 @@ class ArtData:
         }
         self.alpha_prob_human_similarity = []
         self.beta_prob_human_similarity = []
+        
+        self.alpha_accuracy = []
+        self.beta_accuracy = []
         print("ArtData Initialized!")
         
     def next_batch(self, batch_size):
@@ -147,6 +150,7 @@ class ArtData:
             prob_human_similarity.append(percent_v)
         
         self.alpha_pairs['same'] = [a, b, cosine, distance, accuracy, prob_human_similarity]
+        self.alpha_accuracy = accuracy
         
         # assign self.alpha_set_flatten
         alpha_set_flatten_a = []
@@ -188,6 +192,7 @@ class ArtData:
             prob_human_similarity.append(1 - percent_v)
         
         self.alpha_pairs['diff'] = [a, b, cosine, distance, accuracy, prob_human_similarity]
+        self.alpha_accuracy.extend(accuracy)
         
         # assign self.alpha_set_flatten
         alpha_set_flatten_cosine.extend(cosine)
@@ -201,7 +206,7 @@ class ArtData:
                                   alpha_set_flatten_cosine, alpha_set_flatten_distance, 
                                   alpha_set_flatten_prob_human_similarity]
         self.alpha_prob_human_similarity = alpha_set_flatten_prob_human_similarity
-
+        
         
         
         # beta same
@@ -244,6 +249,7 @@ class ArtData:
             prob_human_similarity.append(percent_v)
         
         self.beta_pairs['same'] = [a, b, cosine, distance, accuracy, prob_human_similarity]
+        self.beta_accuracy = accuracy
         
         # assign self.beta_set_flatten
         beta_set_flatten_a = []
@@ -285,6 +291,7 @@ class ArtData:
             prob_human_similarity.append(1 - percent_v)
         
         self.beta_pairs['diff'] = [a, b, cosine, distance, accuracy, prob_human_similarity]
+        self.beta_accuracy.extend(accuracy)
        
         # assign self.beta_set_flatten
         beta_set_flatten_cosine.extend(cosine)

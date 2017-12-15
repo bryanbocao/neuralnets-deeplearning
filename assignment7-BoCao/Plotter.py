@@ -20,6 +20,18 @@ def plot_prob_distance_4lists(alpha_x, alpha_y, beta_x, beta_y):
     plt.plot(alpha_x, alpha_y, 'ro', beta_x, beta_y, 'bo')
     plt.show()
     
+def plot_acc_distance_2lists(x, y):
+    plt.xlabel("Distance")
+    plt.ylabel("Human judgement accuracy")
+    plt.plot(x, y, 'ro')
+    plt.show()
+    
+def plot_acc_distance_4lists(alpha_x, alpha_y, beta_x, beta_y):
+    plt.xlabel("Distance")
+    plt.ylabel("Human judgement accuracy")
+    plt.plot(alpha_x, alpha_y, 'ro', beta_x, beta_y, 'bo')
+    plt.show()
+    
 def plot_prob_cosine_2lists(x, y):
     plt.xlabel("Cosine")
     plt.ylabel("Probability of human judgement on similarity")
@@ -29,6 +41,18 @@ def plot_prob_cosine_2lists(x, y):
 def plot_prob_cosine_4lists(alpha_x, alpha_y, beta_x, beta_y):
     plt.xlabel("Cosine")
     plt.ylabel("Probability of human judgement on similarity")
+    plt.plot(alpha_x, alpha_y, 'ro', beta_x, beta_y, 'bo')
+    plt.show()
+    
+def plot_acc_cosine_2lists(x, y):
+    plt.xlabel("Cosine")
+    plt.ylabel("Human judgement accuracy")
+    plt.plot(x, y, 'ro')
+    plt.show()
+    
+def plot_acc_cosine_4lists(alpha_x, alpha_y, beta_x, beta_y):
+    plt.xlabel("Cosine")
+    plt.ylabel("Human judgement accuracy")
     plt.plot(alpha_x, alpha_y, 'ro', beta_x, beta_y, 'bo')
     plt.show()
 
