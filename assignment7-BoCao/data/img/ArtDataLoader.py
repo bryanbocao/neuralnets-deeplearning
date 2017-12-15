@@ -8,6 +8,7 @@ Reference:
 """
 import numpy as np
 from scipy import misc
+from scipy import spatial
 import os, sys
 import glob
 import pandas as pd
@@ -47,13 +48,15 @@ class ArtData:
         self.beta_set_flatten = [] #[image_pair_a, image_pair_b, cosine, distance, prob_human_similarity]
         
         self.alpha_pairs = {
-            'same': [],
-            'diff': [],
+            'same': [], #all list -- [a, b, cosine, distance, accuracy, prob_human_similarity]
+            'diff': []  #all list -- [a, b, cosine, distance, accuracy, prob_human_similarity]
         }
         self.beta_pairs = {
-            'same': [],
-            'diff': []
+            'same': [], #all list -- [a, b, cosine, distance, accuracy, prob_human_similarity]
+            'diff': []  #all list -- [a, b, cosine, distance, accuracy, prob_human_similarity]
         }
+        self.alpha_prob_human_similarity = []
+        self.beta_prob_human_similarity = []
         print("ArtData Initialized!")
         
     def next_batch(self, batch_size):
@@ -197,7 +200,7 @@ class ArtData:
         self.alpha_set_flatten = [alpha_set_flatten_a, alpha_set_flatten_b, 
                                   alpha_set_flatten_cosine, alpha_set_flatten_distance, 
                                   alpha_set_flatten_prob_human_similarity]
-        
+        self.alpha_prob_human_similarity = alpha_set_flatten_prob_human_similarity
 
         
         
@@ -294,6 +297,7 @@ class ArtData:
         self.beta_set_flatten = [beta_set_flatten_a, beta_set_flatten_b, 
                                   beta_set_flatten_cosine, beta_set_flatten_distance, 
                                   beta_set_flatten_prob_human_similarity]
+        self.beta_prob_human_similarity = beta_set_flatten_prob_human_similarity
         
         
     def get_distance_list(self, a, b):
@@ -303,4 +307,21 @@ class ArtData:
             sq_dist = dist ** 2
             distance.append(math.sqrt(sum(sum(sum(sq_dist)))))
         return distance
-        
+    
+    def get_distance_list_flatten(self, a, b):
+        distance = []
+        for i in range(len(a)):
+            
+            # each image vector
+            sum = 0
+            for j in range(len(a[i])):
+                dist = a[i][j] - b[i][j]
+                sum += dist ** 2
+            distance.append(math.sqrt(sum))
+        return distance
+    
+    def get_cosine_list_flatten(self, a, b):
+        cosine_ls = []
+        for i in range(len(a)):
+            cosine_ls.append(spatial.distance.cosine(a[i], b[i]))
+        return cosine_ls    

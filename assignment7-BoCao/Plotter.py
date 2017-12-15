@@ -8,9 +8,33 @@ Reference:
 """
 import matplotlib.pyplot as plt
 
+def plot_prob_distance_2lists(x, y):
+    plt.xlabel("Distance")
+    plt.ylabel("Probability of human judgement on similarity")
+    plt.plot(x, y, 'ro')
+    plt.show()
+    
+def plot_prob_distance_4lists(alpha_x, alpha_y, beta_x, beta_y):
+    plt.xlabel("Distance")
+    plt.ylabel("Probability of human judgement on similarity")
+    plt.plot(alpha_x, alpha_y, 'ro', beta_x, beta_y, 'bo')
+    plt.show()
+    
+def plot_prob_cosine_2lists(x, y):
+    plt.xlabel("Cosine")
+    plt.ylabel("Probability of human judgement on similarity")
+    plt.plot(x, y, 'ro')
+    plt.show()
+    
+def plot_prob_cosine_4lists(alpha_x, alpha_y, beta_x, beta_y):
+    plt.xlabel("Cosine")
+    plt.ylabel("Probability of human judgement on similarity")
+    plt.plot(alpha_x, alpha_y, 'ro', beta_x, beta_y, 'bo')
+    plt.show()
+
 def plot_acc_distance(data):
-    plt.xlabel("distance")
-    plt.ylabel("probability of human judgement on similarity")
+    plt.xlabel("Distance")
+    plt.ylabel("Probability of human judgement on similarity")
     
     alpha_x = []
     beta_x = []
